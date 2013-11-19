@@ -1,6 +1,19 @@
+/*
+ * jack-dsp.h
+ *
+ * Part of develamp (the research and development amplifier)
+ *
+ * Copyright (C) 2013 Daniel Thompson <daniel@redfelineninja.org.uk>
+ * Copyright (C) 2003-2011 GRAME, Centre National de Creation Musicale
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ */
 
-#ifndef __jack_dsp__
-#define __jack_dsp__
+#ifndef DEVELAMP_JACK_DSP_H_
+#define DEVELAMP_JACK_DSP_H_
 
 #include <stdio.h>
 #include <jack/jack.h>
@@ -151,6 +164,4 @@ static void* _jackthread(void* arg)
 }
 #endif
 
-
-
-#endif
+#endif // DEVELAMP_JACK_DSP_H_

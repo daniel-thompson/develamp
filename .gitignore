@@ -1,0 +1,11 @@
+*.o
+*~
+.*.swp
+
+.project
+.cproject
+.settings/
+
+develamp
+bitshrieker.cpp
+reverb.cpp

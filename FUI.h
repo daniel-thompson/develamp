@@ -1,5 +1,19 @@
-#ifndef FAUST_FUI_H
-#define FAUST_FUI_H
+/*
+ * FUI.h
+ *
+ * Part of develamp (the research and development amplifier)
+ *
+ * Copyright (C) 2013 Daniel Thompson <daniel@redfelineninja.org.uk>
+ * Copyright (C) 2003-2011 GRAME, Centre National de Creation Musicale
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ */
+
+#ifndef DEVELAMP_FUI_H_
+#define DEVELAMP_FUI_H_
 
 #include "UI.h"
 
@@ -12,10 +26,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
-#if 1
-
 /*******************************************************************************
  * FUI : used to save and recall the state of the user interface
  * This class provides essentially two new methods saveState() and recallState()
@@ -25,17 +35,17 @@ using namespace std;
 
 class FUI  : public UI
 {
-	stack<string>		fGroupStack;
-	vector<string>		fNameList;
-	map<string, float*>	fName2Zone;
+	std::stack<std::string>		fGroupStack;
+	std::vector<std::string>	fNameList;
+	std::map<std::string, float*>	fName2Zone;
 
  protected:
 
  	// labels are normalized by replacing white spaces by underscores and by
  	// removing parenthesis
-	string normalizeLabel(const char* label)
+	std::string normalizeLabel(const char* label)
 	{
-		string 	s;
+		std::string 	s;
 		char 	c;
 
 		while ((c=*label++)) {
@@ -49,7 +59,7 @@ class FUI  : public UI
 	// add an element by relating its full name and memory zone
 	virtual void addElement (const char* label, float* zone)
 	{
-		string fullname (fGroupStack.top() + '/' + normalizeLabel(label));
+		std::string fullname (fGroupStack.top() + '/' + normalizeLabel(label));
 		fNameList.push_back(fullname);
 		fName2Zone[fullname] = zone;
 	}
@@ -79,31 +89,31 @@ class FUI  : public UI
 	// save the zones values and full names
 	virtual void saveState(const char* filename)
 	{
-		ofstream f(filename);
+		std::ofstream f(filename);
 
 		for (unsigned int i=0; i<fNameList.size(); i++) {
-			string	n = fNameList[i];
+			std::string	n = fNameList[i];
 			float*	z = fName2Zone[n];
-			f << *z << ' ' << n << endl;
+			f << *z << ' ' << n << std::endl;
 		}
 
-		f << endl;
+		f << std::endl;
 		f.close();
 	}
 
 	// recall the zones values and full names
 	virtual void recallState(const char* filename)
 	{
-		ifstream f(filename);
+		std::ifstream f(filename);
 		float	v;
-		string	n;
+		std::string	n;
 
 		while (f.good()) {
 			f >> v >> n;
 			if (fName2Zone.count(n)>0) {
 				*(fName2Zone[n]) = v;
 			} else {
-				cerr << "recallState : parameter not found : " << n << " with value : " << v << endl;
+				std::cerr << "recallState : parameter not found : " << n << " with value : " << v << std::endl;
 			}
 		}
 		f.close();
@@ -141,7 +151,5 @@ class FUI  : public UI
 
     virtual void declare(float* , const char* , const char* ) {}
 };
-#endif
 
-#endif
-
+#endif // DEVELAMP_FUI_H_

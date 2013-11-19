@@ -1,10 +1,11 @@
 default : all
 
 APP = develamp
-OBJS = main.o bitshrieker.o reverb.o
+OBJS = main.o gtk_knob.o dsp.o GUI.o GTKUI.o $(DSP_OBJS)
+DSP_OBJS = bitshrieker.o reverb.o
 
-CXX = g++
-CXXFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) -Wall -O3
+CXX ?= g++
+CXXFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) -std=gnu++11 -Wall -O3
 LD = $(CXX)
 LDFLAGS = $(GTK_LIBS) $(JACK_LIBS) $(CXXFLAGS)
 
@@ -16,7 +17,7 @@ JACK_LIBS = $(shell pkg-config --libs jack)
 all : $(APP)
 
 clean :
-	$(RM) $(OBJS) bitshrieker.cpp reverb.cpp
+	$(RM) $(OBJS) $(DSP_OBJS:.o=.cpp)
 
 $(APP) : $(OBJS)
 	$(LD) -o $(APP) $(OBJS) $(LDFLAGS)
