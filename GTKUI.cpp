@@ -549,7 +549,7 @@ struct uiToggleButton : public uiItem
     
     static void toggled (GtkWidget *widget, gpointer data)
     {
-        float   v = (GTK_TOGGLE_BUTTON (widget)->active) ? 1.0 : 0.0; 
+        float   v = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) ? 1.0 : 0.0;
         ((uiItem*)data)->modifyZone(v);
     }
 
@@ -634,7 +634,7 @@ struct uiCheckButton : public uiItem
     
     static void toggled (GtkWidget *widget, gpointer data)
     {
-        float   v = (GTK_TOGGLE_BUTTON (widget)->active) ? 1.0 : 0.0; 
+        float   v = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) ? 1.0 : 0.0;
         ((uiItem*)data)->modifyZone(v);
     }
 
@@ -669,7 +669,7 @@ struct uiAdjustment : public uiItem
     
     static void changed (GtkWidget *widget, gpointer data)
     {
-        float   v = GTK_ADJUSTMENT (widget)->value; 
+        float   v = gtk_adjustment_get_value(GTK_ADJUSTMENT (widget));
         ((uiItem*)data)->modifyZone(v);
     }
 

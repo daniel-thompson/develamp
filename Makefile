@@ -9,7 +9,8 @@ CXXFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) -std=gnu++11 -Wall -O3
 LD = $(CXX)
 LDFLAGS = $(GTK_LIBS) $(JACK_LIBS) $(CXXFLAGS)
 
-GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
+GSEAL_CFLAGS ?= -DGSEAL_ENABLE
+GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0) $(GSEAL_CFLAGS)
 GTK_LIBS = $(shell pkg-config --libs gtk+-2.0)
 JACK_CFLAGS = $(shell pkg-config --cflags jack)
 JACK_LIBS = $(shell pkg-config --libs jack)
