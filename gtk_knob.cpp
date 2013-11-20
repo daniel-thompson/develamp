@@ -198,22 +198,22 @@ static gboolean gtk_knob_key_press (GtkWidget *widget, GdkEventKey *event)
 
 	GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 	switch (event->keyval) {
-	case GDK_Home:
+	case GDK_KEY_Home:
 		gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_lower(adj));
 		return TRUE;
-	case GDK_End:
+	case GDK_KEY_End:
 		gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_upper(adj));
 		return TRUE;
-	case GDK_Up:
+	case GDK_KEY_Up:
 		gtk_knob_set_value(widget, 0);
 		return TRUE;
-	case GDK_Right:
+	case GDK_KEY_Right:
 		gtk_knob_set_value(widget, 0);
 		return TRUE;
-	case GDK_Down:
+	case GDK_KEY_Down:
 		gtk_knob_set_value(widget, 1);
 		return TRUE;
-	case GDK_Left:
+	case GDK_KEY_Left:
 		gtk_knob_set_value(widget, 1);
 		return TRUE;
 	}
