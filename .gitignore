@@ -6,6 +6,8 @@
 .cproject
 .settings/
 
+attic/
+
 develamp
 bitshrieker.cpp
 reverb.cpp

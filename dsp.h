@@ -39,6 +39,7 @@
 #define DEVELAMP_DSP_H_
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 class UI;

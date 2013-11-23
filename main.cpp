@@ -16,8 +16,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "dsp.h"
-
 #include "GTKUI.h"
 #include "FUI.h"
 #include "misc.h"
@@ -40,10 +38,6 @@ int main(int argc, char *argv[])
 	snprintf(rcfilename, 255, "%s/.%src", home, appname);
 
 	dsp* DSP = dsp::getDsp(0);
-	if (DSP==0) {
-		cerr << "Unable to allocate Faust DSP object" << endl;
-		exit(1);
-	}
 	GUI* interface 	= new GTKUI (appname, &argc, &argv);
 	FUI* finterface	= new FUI();
 	DSP->buildUserInterface(interface);

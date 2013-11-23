@@ -46,7 +46,7 @@ class jackaudio : public audio {
 	float*			fOutChannel[256];		// tables of noninterleaved output channels for FAUST
 
  public:
-			 jackaudio() : fClient(0), fNumInChans(0), fNumOutChans(0) {}
+	jackaudio() : fDsp(nullptr), fClient(0), fNumInChans(0), fNumOutChans(0) {}
 	virtual ~jackaudio() { stop(); }
 
 	virtual bool init(const char*name, dsp* DSP) {
