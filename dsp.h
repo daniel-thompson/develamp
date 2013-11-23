@@ -13,25 +13,31 @@
  */
 
 //
-// Original license (source came from GNU GPLv3 package and had no license
-// header text, however it was included by the module.cpp architecture file
-// which uses this license).
+// Original license text.
 //
 /************************************************************************
- ************************************************************************
     FAUST Architecture File
 	Copyright (C) 2003-2011 GRAME, Centre National de Creation Musicale
     ---------------------------------------------------------------------
+    This Architecture section is free software; you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 3 of
+	the License, or (at your option) any later version.
 
-	This is sample code. This file is provided as an example of minimal
-	FAUST architecture file. Redistribution and use in source and binary
-	forms, with or without modification, in part or in full are permitted.
-	In particular you can create a derived work of this FAUST architecture
-	and distribute that work under terms of your choice.
-
-	This sample code is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+	along with this program; If not, see <http://www.gnu.org/licenses/>.
+
+	EXCEPTION : As a special exception, you may create a larger work
+	that contains this FAUST architecture section and distribute
+	that work under terms of your choice, so long as this FAUST
+	architecture section is not modified.
+
+
  ************************************************************************
  ************************************************************************/
 
@@ -41,6 +47,10 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+
+#ifndef FAUSTFLOAT
+#define FAUSTFLOAT float
+#endif
 
 class UI;
 
@@ -64,11 +74,24 @@ class dsp {
 	static int getNumDsps();
 	static dsp* getDsp(int n);
 
-	virtual int getNumInputs() = 0;
-	virtual int getNumOutputs() = 0;
-	virtual void buildUserInterface(UI* interface) = 0;
-	virtual void init(int samplingRate) = 0;
- 	virtual void compute(int len, float** inputs, float** outputs) = 0;
+	virtual int getNumInputs() 										= 0;
+	virtual int getNumOutputs() 									= 0;
+	virtual void buildUserInterface(UI* interface) 					= 0;
+	virtual void init(int samplingRate) 							= 0;
+ 	virtual void compute(int len, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) 	= 0;
 };
+
+// On Intel set FZ (Flush to Zero) and DAZ (Denormals Are Zero)
+// flags to avoid costly denormals
+#ifdef __SSE__
+    #include <xmmintrin.h>
+    #ifdef __SSE2__
+        #define AVOIDDENORMALS _mm_setcsr(_mm_getcsr() | 0x8040)
+    #else
+        #define AVOIDDENORMALS _mm_setcsr(_mm_getcsr() | 0x8000)
+    #endif
+#else
+    #define AVOIDDENORMALS
+#endif
 
 #endif // DEVELAMP_DSP_H_

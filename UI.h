@@ -38,6 +38,8 @@
 #ifndef DEVELAMP_UI_H_
 #define DEVELAMP_UI_H_
 
+#include "dsp.h"
+
 /*******************************************************************************
  * UI : Faust User Interface
  * This abstract class contains only the method that the faust compiler can
@@ -49,13 +51,12 @@ class UI
 
  public:
 
-	UI() {	}
+	UI() {}
 
-	virtual ~UI() {	}
+	virtual ~UI() {}
 
     // -- widget's layouts
 
-    virtual void openFrameBox(const char* label) = 0;
     virtual void openTabBox(const char* label) = 0;
     virtual void openHorizontalBox(const char* label) = 0;
     virtual void openVerticalBox(const char* label) = 0;
@@ -63,23 +64,20 @@ class UI
 
     // -- active widgets
 
-    virtual void addButton(const char* label, float* zone) = 0;
-    virtual void addToggleButton(const char* label, float* zone) = 0;
-    virtual void addCheckButton(const char* label, float* zone) = 0;
-    virtual void addVerticalSlider(const char* label, float* zone, float init, float min, float max, float step) = 0;
-    virtual void addHorizontalSlider(const char* label, float* zone, float init, float min, float max, float step) = 0;
-    virtual void addNumEntry(const char* label, float* zone, float init, float min, float max, float step) = 0;
+    virtual void addButton(const char* label, FAUSTFLOAT* zone) = 0;
+    virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) = 0;
+    virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) = 0;
+    virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) = 0;
+    virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) = 0;
 
     // -- passive widgets
 
-    virtual void addNumDisplay(const char* label, float* zone, int precision) = 0;
-    virtual void addTextDisplay(const char* label, float* zone, const char* names[], float min, float max) = 0;
-    virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max) = 0;
-    virtual void addVerticalBargraph(const char* label, float* zone, float min, float max) = 0;
+    virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) = 0;
+    virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) = 0;
 
 	// -- metadata declarations
 
-    virtual void declare(float* , const char* , const char* ) {}
+    virtual void declare(FAUSTFLOAT*, const char*, const char*) {}
 };
 
 #endif // DEVELAMP_UI_H_

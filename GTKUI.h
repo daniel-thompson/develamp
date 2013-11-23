@@ -33,13 +33,13 @@
 class GTKUI : public GUI
 {
  private :
-    static bool fInitialized;
-    static std::map<float*, float> fGuiSize;       // map widget zone with widget size coef
-    static std::map<float*, std::string> fTooltip;       // map widget zone with tooltip strings
-    static std::set<float*> fKnobSet;       // set of widget zone to be knobs
-    std::string gGroupTooltip;
+    static bool                         		fInitialized;
+    static std::map<FAUSTFLOAT*, FAUSTFLOAT> 	fGuiSize;       // map widget zone with widget size coef
+    static std::map<FAUSTFLOAT*, std::string>   fTooltip;       // map widget zone with tooltip strings
+    static std::set<FAUSTFLOAT*>             	fKnobSet;       // set of widget zone to be knobs
+	std::string									gGroupTooltip;
     
-    bool isKnob(float* zone){return fKnobSet.count(zone) > 0;}
+    bool isKnob(FAUSTFLOAT* zone) {return fKnobSet.count(zone) > 0;}
     
  protected :
     GtkWidget*  fWindow;
@@ -60,44 +60,52 @@ class GTKUI : public GUI
 
     // -- Labels and metadata
 
-    virtual void declare (float* zone, const char* key, const char* value);
-    virtual int  checkLabelOptions (GtkWidget* widget, const std::string& fullLabel, std::string& simplifiedLabel);
-    virtual void checkForTooltip (float* zone, GtkWidget* widget);
+    virtual void declare(FAUSTFLOAT* zone, const char* key, const char* value);
+    virtual int  checkLabelOptions(GtkWidget* widget, const std::string& fullLabel, std::string& simplifiedLabel);
+    virtual void checkForTooltip(FAUSTFLOAT* zone, GtkWidget* widget);
     
     // -- layout groups
     
-    virtual void openFrameBox(const char* label);   
     virtual void openTabBox(const char* label = "");
     virtual void openHorizontalBox(const char* label = "");
     virtual void openVerticalBox(const char* label = "");
-
-    // -- extra widget's layouts
-
-    virtual void openDialogBox(const char* label, float* zone);
-    virtual void openEventBox(const char* label = "");
-    virtual void openHandleBox(const char* label = "");
-    virtual void openExpanderBox(const char* label, float* zone);
-    
     virtual void closeBox();
-    virtual void adjustStack(int n);
 
     // -- active widgets
     
-    virtual void addButton(const char* label, float* zone);
-    virtual void addToggleButton(const char* label, float* zone);
-    virtual void addCheckButton(const char* label, float* zone);
-    virtual void addVerticalSlider(const char* label, float* zone, float init, float min, float max, float step);   
-    virtual void addHorizontalSlider(const char* label, float* zone, float init, float min, float max, float step); 
-    virtual void addKnob(const char* label, float* zone, float init, float min, float max, float step);
-    virtual void addNumEntry(const char* label, float* zone, float init, float min, float max, float step);
-    
+    virtual void addButton(const char* label, FAUSTFLOAT* zone);
+    virtual void addCheckButton(const char* label, FAUSTFLOAT* zone);
+    virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);   
+    virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step); 
+    virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
+
     // -- passive display widgets
     
-    virtual void addNumDisplay(const char* label, float* zone, int precision);
-    virtual void addTextDisplay(const char* label, float* zone, const char* names[], float min, float max);
-    virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max);
-    virtual void addVerticalBargraph(const char* label, float* zone, float min, float max);
+    virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
+    virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
     
+    // -- layout groups - internal
+    
+    virtual void openFrameBox(const char* label);   
+   
+    // -- extra widget's layouts
+
+    virtual void openDialogBox(const char* label, FAUSTFLOAT* zone);
+    virtual void openEventBox(const char* label = "");
+    virtual void openHandleBox(const char* label = "");
+    virtual void openExpanderBox(const char* label, FAUSTFLOAT* zone);
+    
+    virtual void adjustStack(int n);
+    
+    // -- active widgets - internal
+    virtual void addToggleButton(const char* label, FAUSTFLOAT* zone);
+    virtual void addKnob(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
+    
+    // -- passive display widgets - internal
+    
+    virtual void addNumDisplay(const char* label, FAUSTFLOAT* zone, int precision);
+    virtual void addTextDisplay(const char* label, FAUSTFLOAT* zone, const char* names[], FAUSTFLOAT min, FAUSTFLOAT max);
+   
     virtual void show();
     virtual void run();
     
