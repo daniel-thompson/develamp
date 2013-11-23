@@ -45,25 +45,22 @@ GtkKnob::~GtkKnob()
 
 const double scale_zero = 20 * (M_PI/180); // defines "dead zone" for knobs
 
-static void knob_expose(GtkWidget *widget, int knob_x, int knob_y, GdkEventExpose *event, int arc_offset)
+static void knob_draw(GtkWidget *widget, cairo_t *cr, int arc_offset)
 {
 	/** check resize **/
-	int grow;
-	GtkAllocation allocation;
-	gtk_widget_get_allocation(widget, &allocation);
-	if(allocation.width > allocation.height) {
-		grow = allocation.height;
-	} else {
-		grow = allocation.width;
-	}
-	knob_x = grow-4;
-	knob_y = grow-4;
+	int width = gtk_widget_get_allocated_width (widget);
+	int height = gtk_widget_get_allocated_height (widget);
+	int grow = MIN(width, height);
+
+	int knob_x = grow-4;
+	int knob_y = grow-4;
+	int knobx = 2 + ((width-4 - knob_x) * 0.5);
+	int knoby = 2 + ((height-4 - knob_y) * 0.5);
+	int knobx1 = 2 + ((width-4)* 0.5);
+	int knoby1 = 2 + ((height-4) * 0.5);
+
 	/** get values for the knob **/
 	GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-	int knobx = (allocation.x+2 + (allocation.width-4 - knob_x) * 0.5);
-	int knoby = (allocation.y+2 + (allocation.height-4 - knob_y) * 0.5);
-	int knobx1 = (allocation.x+2 + (allocation.width-4)* 0.5);
-	int knoby1 = (allocation.y+2 + (allocation.height-4) * 0.5);
 	double adjvalue = gtk_adjustment_get_value(adj);
 	double adjlower = gtk_adjustment_get_lower(adj);
 	double adjupper = gtk_adjustment_get_upper(adj);
@@ -76,27 +73,22 @@ static void knob_expose(GtkWidget *widget, int knob_x, int knob_y, GdkEventExpos
 	double lengh_y = (knoby+radius+pointer_off/2) + radius * cos(angle);
 	double radius1 = MIN(knob_x, knob_y) / 2 ;
 
-	/** get widget forground color convert to cairo **/
-	GtkStyle *style = gtk_widget_get_style (widget);
-	double r = MIN(0.6,style->fg[gtk_widget_get_state(widget)].red/65535.0),
-		   g = MIN(0.6,style->fg[gtk_widget_get_state(widget)].green/65535.0),
-		   b = MIN(0.6,style->fg[gtk_widget_get_state(widget)].blue/65535.0);
+	/** handle the widget's style **/
+	GtkStateFlags state_flags = gtk_widget_get_state_flags (widget);
+	GtkStyleContext *style = gtk_widget_get_style_context (widget);
+	GdkRGBA fg;
+	gtk_style_context_get_color (style, state_flags, &fg);
 
-	/** paint focus **/
+	/** get widget forground color convert to cairo **/
+	double r = MIN(0.6, fg.red), g = MIN(0.6, fg.green), b = MIN(0.6, fg.blue);
+
+	/** render focus **/
 	if (gtk_widget_has_focus(widget)== TRUE) {
-		gtk_paint_focus(gtk_widget_get_style(widget),
-				gtk_widget_get_window(widget),
-				GTK_STATE_NORMAL, NULL, widget, NULL,
+		gtk_render_focus(gtk_widget_get_style_context(widget), cr,
 		                knobx-2, knoby-2, knob_x+4, knob_y+4);
 	}
+
 	/** create clowing knobs with cairo **/
-	cairo_t *cr = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
-	GdkRegion *region;
-	region = gdk_region_rectangle (&allocation);
-	gdk_region_intersect (region, event->region);
-	gdk_cairo_region (cr, region);
-	cairo_clip (cr);
-	
 	cairo_arc(cr,knobx1+arc_offset, knoby1+arc_offset, knob_x/2.1, 0, 2 * M_PI );
 	cairo_pattern_t*pat =
 		cairo_pattern_create_radial (knobx1+arc_offset-knob_x/6,knoby1+arc_offset-knob_x/6, 1,knobx1+arc_offset,knoby1+arc_offset,knob_x/2.1 );
@@ -115,7 +107,7 @@ static void knob_expose(GtkWidget *widget, int knob_x, int knob_y, GdkEventExpos
 	}
 	cairo_set_source (cr, pat);
 	cairo_fill_preserve (cr);
-	gdk_cairo_set_source_color(cr, gtk_widget_get_style (widget)->fg);
+	gdk_cairo_set_source_rgba(cr, &fg);
 	cairo_set_line_width(cr, 2.0);
 	cairo_stroke(cr);
 
@@ -133,8 +125,6 @@ static void knob_expose(GtkWidget *widget, int knob_x, int knob_y, GdkEventExpos
 	cairo_line_to(cr,lengh_x,lengh_y);
 	cairo_stroke(cr);
 	cairo_pattern_destroy (pat);
-	gdk_region_destroy (region);
-	cairo_destroy(cr);
 }
 
 /****************************************************************
@@ -142,11 +132,11 @@ static void knob_expose(GtkWidget *widget, int knob_x, int knob_y, GdkEventExpos
  */
 
 //----------- draw the Knob when moved
-static gboolean gtk_knob_expose (GtkWidget *widget, GdkEventExpose *event)
+
+static gboolean gtk_knob_draw (GtkWidget *widget, cairo_t *cr)
 {
 	g_assert(GTK_IS_KNOB(widget));
-	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_OBJECT_GET_CLASS(widget));
-	knob_expose(widget, klass->knob_x, klass->knob_y, event, 0);
+	knob_draw(widget, cr, 0);
 	return TRUE;
 }
 
@@ -154,12 +144,22 @@ static gboolean gtk_knob_expose (GtkWidget *widget, GdkEventExpose *event)
  ** set initial size for GdkDrawable per type
  */
 
-static void gtk_knob_size_request (GtkWidget *widget, GtkRequisition *requisition)
+static void gtk_knob_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width)
 {
 	g_assert(GTK_IS_KNOB(widget));
-	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_OBJECT_GET_CLASS(widget));
-	requisition->width = klass->knob_x;
-	requisition->height = klass->knob_y;
+	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_WIDGET_GET_CLASS(widget));
+	*minimal_width = *natural_width = klass->knob_x;
+}
+
+static void gtk_knob_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height)
+{
+	g_assert(GTK_IS_KNOB(widget));
+	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_WIDGET_GET_CLASS(widget));
+	*minimal_height = *natural_height = klass->knob_x;
 }
 
 /****************************************************************
@@ -295,7 +295,7 @@ static gboolean gtk_knob_button_press (GtkWidget *widget, GdkEventButton *event)
 {
 	g_assert(GTK_IS_KNOB(widget));
 	
-	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_OBJECT_GET_CLASS(widget));
+	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_WIDGET_GET_CLASS(widget));
 	
 
 	switch (event->button) {
@@ -326,7 +326,7 @@ static gboolean gtk_knob_button_press (GtkWidget *widget, GdkEventButton *event)
 static gboolean gtk_knob_button_release (GtkWidget *widget, GdkEventButton *event)
 {
 	g_assert(GTK_IS_KNOB(widget));
-	GTK_KNOB_CLASS(GTK_OBJECT_GET_CLASS(widget))->button_is = 0;
+	GTK_KNOB_CLASS(GTK_WIDGET_GET_CLASS(widget))->button_is = 0;
 	if (gtk_widget_has_grab(widget))
 		gtk_grab_remove(widget);
 	return FALSE;
@@ -339,7 +339,7 @@ static gboolean gtk_knob_button_release (GtkWidget *widget, GdkEventButton *even
 static gboolean gtk_knob_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
 {
 	g_assert(GTK_IS_KNOB(widget));
-	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_OBJECT_GET_CLASS(widget));
+	GtkKnobClass *klass =  GTK_KNOB_CLASS(GTK_WIDGET_GET_CLASS(widget));
 	
 	gdk_event_request_motions (event);
 	
@@ -380,8 +380,9 @@ static void gtk_knob_class_init (GtkKnobClass *klass)
 	klass->button_is = 0;
 
 //--------- connect the events with funktions
-	widget_class->expose_event = gtk_knob_expose;
-	widget_class->size_request = gtk_knob_size_request;
+	widget_class->draw = gtk_knob_draw;
+	widget_class->get_preferred_width = gtk_knob_get_preferred_width;
+	widget_class->get_preferred_height = gtk_knob_get_preferred_height;
 	widget_class->button_press_event = gtk_knob_button_press;
 	widget_class->button_release_event = gtk_knob_button_release;
 	widget_class->motion_notify_event = gtk_knob_pointer_motion;
@@ -397,8 +398,8 @@ static void gtk_knob_init (GtkKnob *knob)
 {
 	GtkWidget *widget = GTK_WIDGET(knob);
 
-	gtk_widget_set_can_focus(GTK_WIDGET(knob), TRUE);
-	gtk_widget_set_can_default(GTK_WIDGET(knob), TRUE);
+	gtk_widget_set_can_focus(widget, TRUE);
+	gtk_widget_set_can_default(widget, TRUE);
 }
 
 /****************************************************************
@@ -423,7 +424,7 @@ GtkWidget *GtkKnob::gtk_knob_new_with_adjustment(GtkAdjustment *_adjustment)
 	knob->last_quadrant = 0;
 	if (widget) {
 		gtk_range_set_adjustment(GTK_RANGE(widget), _adjustment);
-		g_signal_connect(GTK_OBJECT(widget), "value-changed",
+		g_signal_connect(widget, "value-changed",
 		                 G_CALLBACK(gtk_knob_value_changed), widget);
 	}
 	return widget;

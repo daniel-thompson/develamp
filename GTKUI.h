@@ -28,8 +28,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <assert.h>
 
-#include "gtk_knob.h"
-
 #define stackSize 256
 
 class GTKUI : public GUI
@@ -57,7 +55,6 @@ class GTKUI : public GUI
  public :
     static const gboolean expand = TRUE;
     static const gboolean fill = TRUE;
-    static const gboolean homogene = FALSE;
          
     GTKUI(char * name, int* pargc, char*** pargv);
 
