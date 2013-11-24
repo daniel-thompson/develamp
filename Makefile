@@ -14,7 +14,7 @@
 default : all
 
 APP = develamp
-OBJS = main.o gtk_knob.o dsp.o GUI.o GTKUI.o $(DSP_OBJS)
+OBJS = main.o gtk_knob.o dsp.o composite_dsp.o GUI.o GTKUI.o $(DSP_OBJS)
 DSP_OBJS = bitshrieker.o reverb.o
 
 OPTFLAGS = -g -O0

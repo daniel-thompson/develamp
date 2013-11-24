@@ -13,5 +13,5 @@
 
 #include "dsp.h"
 
-std::vector<dsp*> dsp::fDspList;
+std::list<dsp*> dsp::fDspList;
 

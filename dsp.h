@@ -46,7 +46,7 @@
 
 #include <algorithm>
 #include <iterator>
-#include <vector>
+#include <list>
 
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
@@ -60,7 +60,7 @@ class UI;
 
 class dsp {
  protected:
-	static std::vector<dsp*> fDspList;
+	static std::list<dsp*> fDspList;
 	int fSamplingFreq;
  public:
 	dsp() {
@@ -71,7 +71,7 @@ class dsp {
 				           std::end(fDspList), this), std::end(fDspList));
 	}
 
-	static std::vector<dsp*>& getDspList() { return fDspList; }
+	static std::list<dsp*>& getDspList() { return fDspList; }
 
 	virtual int getNumInputs() 										= 0;
 	virtual int getNumOutputs() 									= 0;

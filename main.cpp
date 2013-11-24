@@ -20,6 +20,7 @@
 #include "FUI.h"
 #include "misc.h"
 #include "jack-dsp.h"
+#include "composite_dsp.h"
 
 using namespace std;
 
@@ -78,10 +79,11 @@ int main(int argc, char *argv[])
 		d->buildUserInterface(settings);
 	}
 
-	auto DSP = *begin(dspList);
+	auto DSP = composite_dsp{dspList};
+	//auto DSP = *begin(dspList);
 	auto finterface = *begin(settingsList);
 	jackaudio audio;
-	audio.init(appname, DSP);
+	audio.init(appname, &DSP);
 	finterface->recallState(rcfilename);
 	audio.start();
 
