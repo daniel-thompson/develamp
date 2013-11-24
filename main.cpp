@@ -24,6 +24,33 @@
 
 using namespace std;
 
+class MapMeta : public Meta {
+protected:
+	map<string, string> meta;
+
+public:
+
+	virtual void declare(const char* key, const char* value) override {
+		meta.emplace(key, value);
+	}
+
+	const string& getName() {
+		// the if there is no name then it the empty string will be
+		// created automatically by operator[]
+		return meta["name"];
+	}
+};
+
+static gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
+{
+    return FALSE;
+}
+
+static void destroy_event( GtkWidget *widget, gpointer data )
+{
+    gtk_main_quit ();
+}
+
 static gboolean do_update_all_guis(gpointer)
 {
     GUI::updateAllGuis();
@@ -32,15 +59,29 @@ static gboolean do_update_all_guis(gpointer)
 
 static void develamp_main(list<GTKUI*>& guiList)
 {
+	auto stack = gtk_stack_new();
+	string name = "Name #1";
 	for (auto gui : guiList) {
-		GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		gtk_window_set_title(GTK_WINDOW(window), "Temporary");
-
-		GtkWidget* panel = gui->getContainer();
-		gtk_container_add(GTK_CONTAINER(window), panel);
-		gtk_widget_show(panel);
-		gtk_widget_show(window);
+		auto panel = gui->getContainer();
+		gtk_stack_add_titled(GTK_STACK(stack), panel, name.c_str(), name.c_str());
+		*--end(name) += 1;
 	}
+
+	auto switcher = gtk_stack_switcher_new();
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(switcher), GTK_ORIENTATION_VERTICAL);
+	gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(stack));
+
+	auto paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_paned_add1(GTK_PANED(paned), switcher);
+	gtk_paned_add2(GTK_PANED(paned), stack);
+
+	auto window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_container_set_border_width(GTK_CONTAINER(window), 6);
+	gtk_window_set_title (GTK_WINDOW (window), "Research and Development Amplifier");
+	g_signal_connect (window, "delete_event", G_CALLBACK(delete_event), NULL);
+	g_signal_connect (window, "destroy", G_CALLBACK(destroy_event), NULL);
+	gtk_container_add(GTK_CONTAINER(window), paned);
+	gtk_widget_show_all(window);
 
 	g_timeout_add(40, do_update_all_guis, 0);
 	gtk_main ();
