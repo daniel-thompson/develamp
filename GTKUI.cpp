@@ -222,7 +222,6 @@ GTKUI::GTKUI(char * name, int* pargc, char*** pargv)
     fTop = 0;
     fBox[fTop] = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     fMode[fTop] = kBoxMode;
-    gtk_container_add (GTK_CONTAINER (fWindow), fBox[fTop]);
     fStopped = false;
 }
 
@@ -296,10 +295,6 @@ int GTKUI::checkLabelOptions(GtkWidget* widget, const std::string& fullLabel, st
 
     if (metadata.count("tooltip")) {
 	gtk_widget_set_tooltip_text(widget, metadata["tooltip"].c_str());
-    }
-    if (metadata["option"] == "detachable") {
-        openHandleBox(simplifiedLabel.c_str());
-        return 1;
     }
 
 	//---------------------
@@ -386,23 +381,6 @@ void GTKUI::openVerticalBox(const char* fullLabel)
 
     // adjust stack because otherwise Handlebox will remain open
     adjustStack(adjust);
-}
-
-void GTKUI::openHandleBox(const char* label)
-{
-    GtkWidget * box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
-    gtk_container_set_border_width (GTK_CONTAINER (box), 2);
-    if (fMode[fTop] != kTabMode && label[0] != 0)
-    {
-        GtkWidget * frame = addWidget(label, gtk_handle_box_new ());
-        gtk_container_add (GTK_CONTAINER(frame), box);
-        gtk_widget_show(box);
-        pushBox(kBoxMode, box);
-    }
-    else
-    {
-        pushBox(kBoxMode, addWidget(label, box));
-    }
 }
 
 void GTKUI::openEventBox(const char* label)
@@ -849,7 +827,7 @@ struct uiBargraph : public uiItem
     virtual void reflectZone()  
     { 
         FAUSTFLOAT v = *fZone;
-        fCache = v; 
+        fCache = v;
         gtk_progress_bar_set_fraction(fProgressBar, scale(v));  
     }
 };
@@ -982,9 +960,16 @@ static gboolean callUpdateAllGuis(gpointer)
 void GTKUI::run() 
 {
     assert(fTop == 0);
+    gtk_container_add (GTK_CONTAINER (fWindow), fBox[0]);
     gtk_widget_show  (fBox[0]);
     gtk_widget_show  (fWindow);
     g_timeout_add(40, callUpdateAllGuis, 0);
     gtk_main ();
     stop();
+}
+
+GtkWidget* GTKUI::getContainer()
+{
+    assert(fTop == 0);
+    return fBox[0];
 }

@@ -23,6 +23,32 @@
 
 using namespace std;
 
+static gboolean do_update_all_guis(gpointer)
+{
+    GUI::updateAllGuis();
+    return TRUE;
+}
+
+static void develamp_main(list<GTKUI*>& guiList)
+{
+	for (auto gui : guiList) {
+		GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		gtk_window_set_title(GTK_WINDOW(window), "Temporary");
+
+		GtkWidget* panel = gui->getContainer();
+		gtk_container_add(GTK_CONTAINER(window), panel);
+		gtk_widget_show(panel);
+		gtk_widget_show(window);
+	}
+
+	g_timeout_add(40, do_update_all_guis, 0);
+	gtk_main ();
+
+	for (auto& gui : guiList) {
+		gui->stop();
+	}
+}
+
 /*!
  * Entry point.
  *
@@ -37,18 +63,29 @@ int main(int argc, char *argv[])
 	snprintf(appname, 255, "%s", basename(argv[0]));
 	snprintf(rcfilename, 255, "%s/.%src", home, appname);
 
-	dsp* DSP = dsp::getDsp(0);
-	GUI* interface 	= new GTKUI (appname, &argc, &argv);
-	FUI* finterface	= new FUI();
-	DSP->buildUserInterface(interface);
-	DSP->buildUserInterface(finterface);
+	auto& dspList = dsp::getDspList();
 
+	list<GTKUI*> guiList;
+	list<FUI*> settingsList;
+
+	for (auto& d : dspList) {
+		auto gui = new GTKUI{appname, &argc, &argv};
+		guiList.push_back(gui);
+		d->buildUserInterface(gui);
+
+		auto settings = new FUI{};
+		settingsList.push_back(settings);
+		d->buildUserInterface(settings);
+	}
+
+	auto DSP = *begin(dspList);
+	auto finterface = *begin(settingsList);
 	jackaudio audio;
 	audio.init(appname, DSP);
 	finterface->recallState(rcfilename);
 	audio.start();
 
-	interface->run();
+	develamp_main(guiList);
 
 	audio.stop();
 	finterface->saveState(rcfilename);

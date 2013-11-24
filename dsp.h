@@ -71,8 +71,7 @@ class dsp {
 				           std::end(fDspList), this), std::end(fDspList));
 	}
 
-	static int getNumDsps();
-	static dsp* getDsp(int n);
+	static std::vector<dsp*>& getDspList() { return fDspList; }
 
 	virtual int getNumInputs() 										= 0;
 	virtual int getNumOutputs() 									= 0;

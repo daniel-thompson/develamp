@@ -92,7 +92,6 @@ class GTKUI : public GUI
 
     virtual void openDialogBox(const char* label, FAUSTFLOAT* zone);
     virtual void openEventBox(const char* label = "");
-    virtual void openHandleBox(const char* label = "");
     virtual void openExpanderBox(const char* label, FAUSTFLOAT* zone);
     
     virtual void adjustStack(int n);
@@ -108,7 +107,7 @@ class GTKUI : public GUI
    
     virtual void show();
     virtual void run();
-    
+    virtual GtkWidget* getContainer();
 };
 
 #endif // DEVELAMP_GTKUI_H_

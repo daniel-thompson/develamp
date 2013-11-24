@@ -17,10 +17,11 @@ APP = develamp
 OBJS = main.o gtk_knob.o dsp.o GUI.o GTKUI.o $(DSP_OBJS)
 DSP_OBJS = bitshrieker.o reverb.o
 
+OPTFLAGS = -g -O0
 CC ?= gcc
-CFLAGS = $(GTK_CFLAGS) -Wall -O3
+CFLAGS = $(GTK_CFLAGS) -Wall -Werror $(OPTFLAGS)
 CXX ?= g++
-CXXFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) -std=gnu++11 -Wall -O3
+CXXFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) -std=gnu++11 -Wall -Werror $(OPTFLAGS) $(PRIVATE_CFLAGS)
 LD = $(CXX)
 LDFLAGS = $(GTK_LIBS) $(JACK_LIBS) $(CXXFLAGS)
 
@@ -39,4 +40,4 @@ $(APP) : $(OBJS)
 	$(LD) -o $(APP) $(OBJS) $(LDFLAGS)
 
 %.cpp : %.dsp
-	faust -a faustglue.cpp -o $@ $<
+	faust -a faustglue.cpp -cn $(<:.dsp=)dsp -o $@ $<

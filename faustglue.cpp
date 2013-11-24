@@ -62,4 +62,4 @@ using namespace std;
 //  Static DSP instance (will be added to a list during construction)
 //----------------------------------------------------------------
 
-static mydsp staticdsp;
+static FAUSTCLASS staticdsp;

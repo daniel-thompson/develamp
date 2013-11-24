@@ -15,12 +15,3 @@
 
 std::vector<dsp*> dsp::fDspList;
 
-int dsp::getNumDsps()
-{
-	return fDspList.size();
-}
-
-dsp* dsp::getDsp(int n)
-{
-	return fDspList.at(n);
-}
