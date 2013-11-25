@@ -11,3 +11,26 @@ attic/
 develamp
 bitshrieker.cpp
 reverb.cpp
+
+# .deps is a directory that is used by automake (and can spring
+# up in multiple places). .dirstamp is similar but is a file.
+.deps
+.dirstamp
+
+# Autotools
+Makefile
+Makefile.in
+aclocal.m4
+ar-lib
+autom4te.cache/
+compile
+config.guess
+config.status
+config.log
+config.sub
+configure
+depcomp
+install-sh
+missing
+test-driver
+
