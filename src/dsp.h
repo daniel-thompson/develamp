@@ -60,18 +60,10 @@ class UI;
 
 class dsp {
  protected:
-	static std::list<dsp*> fDspList;
 	int fSamplingFreq;
  public:
-	dsp() {
-		fDspList.push_back(this);
-	}
-	virtual ~dsp() {
-		fDspList.erase(std::remove(std::begin(fDspList),
-				           std::end(fDspList), this), std::end(fDspList));
-	}
-
-	static std::list<dsp*>& getDspList() { return fDspList; }
+	dsp() {}
+	virtual ~dsp() {}
 
 	virtual int getNumInputs() 										= 0;
 	virtual int getNumOutputs() 									= 0;

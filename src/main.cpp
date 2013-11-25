@@ -21,25 +21,9 @@
 #include "misc.h"
 #include "jack-dsp.h"
 #include "composite_dsp.h"
+#include "dsp_factory.h"
 
 using namespace std;
-
-class MapMeta : public Meta {
-protected:
-	map<string, string> meta;
-
-public:
-
-	virtual void declare(const char* key, const char* value) override {
-		meta.emplace(key, value);
-	}
-
-	const string& getName() {
-		// the if there is no name then it the empty string will be
-		// created automatically by operator[]
-		return meta["name"];
-	}
-};
 
 static gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
@@ -105,7 +89,11 @@ int main(int argc, char *argv[])
 	snprintf(appname, 255, "%s", basename(argv[0]));
 	snprintf(rcfilename, 255, "%s/.%src", home, appname);
 
-	auto& dspList = dsp::getDspList();
+	list<dsp*> dspList;
+
+	for (auto& p : dsp_factory::instances) {
+		dspList.push_back(p->create_dsp());
+	}
 
 	list<GTKUI*> guiList;
 	list<FUI*> settingsList;

@@ -36,8 +36,9 @@
 #include <map>
 #include <list>
 
-#include "GUI.h"
 #include "dsp.h"
+#include "dsp_factory.h"
+#include "GUI.h"
 #include "misc.h"
 
 using namespace std;
@@ -59,7 +60,23 @@ using namespace std;
 <<includeclass>>
 
 //----------------------------------------------------------------
-//  Static DSP instance (will be added to a list during construction)
+//  Static factory class and instance (will be added to a list during construction)
 //----------------------------------------------------------------
 
-static FAUSTCLASS staticdsp;
+// generate the factory class name
+#define __FAUSTFACTORY(x) x ## _factory
+#define _FAUSTFACTORY(x) __FAUSTFACTORY(x)
+#define FAUSTFACTORY _FAUSTFACTORY(FAUSTCLASS)
+
+class FAUSTFACTORY : public dsp_factory {
+public:
+	FAUSTFACTORY() {
+		FAUSTCLASS::metadata(&meta);
+	}
+
+	virtual dsp* manufacture_dsp() const override {
+		return new FAUSTCLASS;
+	}
+};
+
+static FAUSTFACTORY staticdsp;

@@ -34,7 +34,7 @@ src_develamp_CLEAN = \
 src_develamp_SOURCES = \
 	src/main.cpp \
 	src/gtk_knob.cpp \
-	src/dsp.cpp \
+	src/dsp_factory.cpp \
 	src/composite_dsp.cpp \
 	src/GUI.cpp \
 	src/GTKUI.cpp \
@@ -48,3 +48,8 @@ CLEANFILES += $(src_develamp_CLEAN)
 	@echo "  FAUST    $@"
 	@faust -a $(top_srcdir)/src/faustglue.cpp -cn `basename $< .dsp` -o $@ $<
 
+#
+# Manual dependancies
+#
+
+$(src_develamp_CLEAN) : $(top_srcdir)/src/faustglue.cpp

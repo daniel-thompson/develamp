@@ -1,5 +1,5 @@
 /*
- * dsp.cpp
+ * dsp_factory.cpp
  *
  * Part of develamp (the research and development amplifier)
  *
@@ -11,7 +11,7 @@
  * (at your option) any later version.
  */
 
-#include "dsp.h"
+#include "dsp_factory.h"
 
-std::list<dsp*> dsp::fDspList;
+std::list<dsp_factory*> dsp_factory::instances;
 
