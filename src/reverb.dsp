@@ -6,6 +6,9 @@
  *   _ : reverb : _,_
  *   _ : reverb : _,!
  */
+ 
+ declare name      "JCRev Reverb";
+ 
 reverb = *(0.06) : allpass_chain <: comb_bank :> _ <: (_, *(-1)) with {
 	allpass_chain = allpass(347,0.7) :
 			allpass(113,0.7) :

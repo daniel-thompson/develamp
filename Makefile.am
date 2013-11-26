@@ -35,6 +35,7 @@ src_develamp_SOURCES = \
 	src/main.cpp \
 	src/gtk_knob.cpp \
 	src/dsp_factory.cpp \
+	src/dsp_wrapper.cpp \
 	src/composite_dsp.cpp \
 	src/GUI.cpp \
 	src/GTKUI.cpp \

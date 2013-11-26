@@ -22,6 +22,7 @@
 #include "jack-dsp.h"
 #include "composite_dsp.h"
 #include "dsp_factory.h"
+#include "dsp_wrapper.h"
 
 using namespace std;
 
@@ -41,14 +42,12 @@ static gboolean do_update_all_guis(gpointer)
     return TRUE;
 }
 
-static void develamp_main(list<GTKUI*>& guiList)
+static void develamp_main(list<dsp_wrapper*>& wrapperList)
 {
 	auto stack = gtk_stack_new();
-	string name = "Name #1";
-	for (auto gui : guiList) {
-		auto panel = gui->getContainer();
-		gtk_stack_add_titled(GTK_STACK(stack), panel, name.c_str(), name.c_str());
-		*--end(name) += 1;
+	for (auto w : wrapperList) {
+		auto panel = w->get_panel();
+		gtk_stack_add_titled(GTK_STACK(stack), panel, w->get_name().c_str(), w->get_name().c_str());
 	}
 
 	auto switcher = gtk_stack_switcher_new();
@@ -70,9 +69,11 @@ static void develamp_main(list<GTKUI*>& guiList)
 	g_timeout_add(40, do_update_all_guis, 0);
 	gtk_main ();
 
+#if 0
 	for (auto& gui : guiList) {
 		gui->stop();
 	}
+#endif
 }
 
 /*!
@@ -89,36 +90,25 @@ int main(int argc, char *argv[])
 	snprintf(appname, 255, "%s", basename(argv[0]));
 	snprintf(rcfilename, 255, "%s/.%src", home, appname);
 
+	list<dsp_wrapper*> wrapperList;
+	for (auto& p : dsp_factory::instances)
+		wrapperList.push_back(new dsp_wrapper{appname, &argc, &argv, p});
+
 	list<dsp*> dspList;
-
-	for (auto& p : dsp_factory::instances) {
-		dspList.push_back(p->create_dsp());
-	}
-
-	list<GTKUI*> guiList;
-	list<FUI*> settingsList;
-
-	for (auto& d : dspList) {
-		auto gui = new GTKUI{appname, &argc, &argv};
-		guiList.push_back(gui);
-		d->buildUserInterface(gui);
-
-		auto settings = new FUI{};
-		settingsList.push_back(settings);
-		d->buildUserInterface(settings);
+	for (auto& p : wrapperList) {
+		dspList.push_back(p->get_dsp());
+		p->recall_state();
 	}
 
 	auto DSP = composite_dsp{dspList};
-	//auto DSP = *begin(dspList);
-	auto finterface = *begin(settingsList);
 	jackaudio audio;
 	audio.init(appname, &DSP);
-	finterface->recallState(rcfilename);
 	audio.start();
 
-	develamp_main(guiList);
+	develamp_main(wrapperList);
 
 	audio.stop();
-	finterface->saveState(rcfilename);
+	for (auto& p : wrapperList)
+		p->save_state();
 	return 0;
 }
