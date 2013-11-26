@@ -33,11 +33,12 @@
  * The file is human readble and editable
  ******************************************************************************/
 
-class FUI  : public UI
+class FUI : public UI
 {
-	std::stack<std::string>		fGroupStack;
-	std::vector<std::string>	fNameList;
-	std::map<std::string, float*>	fName2Zone;
+    
+    std::stack<std::string>             fGroupStack;
+	std::vector<std::string>            fNameList;
+	std::map<std::string, FAUSTFLOAT*>	fName2Zone;
 
  protected:
 
@@ -57,7 +58,7 @@ class FUI  : public UI
 	}
 
 	// add an element by relating its full name and memory zone
-	virtual void addElement (const char* label, float* zone)
+	virtual void addElement(const char* label, FAUSTFLOAT* zone)
 	{
 		std::string fullname (fGroupStack.top() + '/' + normalizeLabel(label));
 		fNameList.push_back(fullname);
@@ -93,8 +94,8 @@ class FUI  : public UI
 
 		for (unsigned int i=0; i<fNameList.size(); i++) {
 			std::string	n = fNameList[i];
-			float*	z = fName2Zone[n];
-			f << *z << ' ' << n << std::endl;
+			FAUSTFLOAT*	z = fName2Zone[n];
+			f << *z << ' ' << n.c_str() << std::endl;
 		}
 
 		f << std::endl;
@@ -105,7 +106,7 @@ class FUI  : public UI
 	virtual void recallState(const char* filename)
 	{
 		std::ifstream f(filename);
-		float	v;
+		FAUSTFLOAT	v;
 		std::string	n;
 
 		while (f.good()) {
@@ -113,7 +114,7 @@ class FUI  : public UI
 			if (fName2Zone.count(n)>0) {
 				*(fName2Zone[n]) = v;
 			} else {
-				std::cerr << "recallState : parameter not found : " << n << " with value : " << v << std::endl;
+				std::cerr << "recallState : parameter not found : " << n.c_str() << " with value : " << v << std::endl;
 			}
 		}
 		f.close();
@@ -122,7 +123,6 @@ class FUI  : public UI
 
     // -- widget's layouts (just keep track of group labels)
 
-    virtual void openFrameBox(const char* label) 		{ pushGroupLabel(label); }
     virtual void openTabBox(const char* label) 			{ pushGroupLabel(label); }
     virtual void openHorizontalBox(const char* label) 	{ pushGroupLabel(label); }
     virtual void openVerticalBox(const char* label)  	{ pushGroupLabel(label); }
@@ -130,26 +130,23 @@ class FUI  : public UI
 
     // -- active widgets (just add an element)
 
-    virtual void addButton(const char* label, float* zone) 			{ addElement(label, zone); }
-    virtual void addToggleButton(const char* label, float* zone) 	{ addElement(label, zone); }
-    virtual void addCheckButton(const char* label, float* zone) 	{ addElement(label, zone); }
-    virtual void addVerticalSlider(const char* label, float* zone, float , float , float , float )
+    virtual void addButton(const char* label, FAUSTFLOAT* zone) 		{ addElement(label, zone); }
+    virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) 	{ addElement(label, zone); }
+    virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT)
     																{ addElement(label, zone); }
-    virtual void addHorizontalSlider(const char* label, float* zone, float , float , float , float )
+    virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT)
     																{ addElement(label, zone); }
-    virtual void addNumEntry(const char* label, float* zone, float , float , float , float )
+    virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT , FAUSTFLOAT)
     																{ addElement(label, zone); }
 
     // -- passive widgets (are ignored)
 
-    virtual void addNumDisplay(const char* , float* , int ) {};
-    virtual void addTextDisplay(const char* , float* , const char*[], float , float ) {};
-    virtual void addHorizontalBargraph(const char* , float* , float , float ) {};
-    virtual void addVerticalBargraph(const char* , float* , float , float ) {};
+    virtual void addHorizontalBargraph(const char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT) {};
+    virtual void addVerticalBargraph(const char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT) {};
 
 	// -- metadata are not used
 
-    virtual void declare(float* , const char* , const char* ) {}
+    virtual void declare(FAUSTFLOAT*, const char*, const char*) {}
 };
 
 #endif // DEVELAMP_FUI_H_
