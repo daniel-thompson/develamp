@@ -96,7 +96,7 @@ void composite_dsp::compute(int len, FAUSTFLOAT** rawinputs, FAUSTFLOAT** rawout
 		assert(1 <= current_width && current_width <= 2);
 
 		for (auto i=0; i<2; i++)
-			std::swap(inputs[i], outputs[1]);
+			std::swap(inputs[i], outputs[i]);
 	}
 
 	// mono to stereo by replicating the left channel
