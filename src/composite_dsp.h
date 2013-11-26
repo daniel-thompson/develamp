@@ -18,6 +18,7 @@
 #include <list>
 
 #include "dsp.h"
+class dsp_wrapper;
 
 class composite_dsp : public dsp {
 protected:
@@ -28,6 +29,7 @@ protected:
 
 public:
 	composite_dsp(const std::list<dsp*>& l);
+	composite_dsp(const std::list<dsp_wrapper*>& l);
 	virtual ~composite_dsp() override;
 
 	virtual int getNumInputs() override;

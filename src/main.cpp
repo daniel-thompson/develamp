@@ -66,6 +66,7 @@ static void develamp_main(list<dsp_wrapper*>& wrapperList)
 	gtk_container_add(GTK_CONTAINER(window), paned);
 	gtk_widget_show_all(window);
 
+	do_update_all_guis(nullptr);
 	g_timeout_add(40, do_update_all_guis, 0);
 	gtk_main ();
 
@@ -94,21 +95,22 @@ int main(int argc, char *argv[])
 	for (auto& p : dsp_factory::instances)
 		wrapperList.push_back(new dsp_wrapper{appname, &argc, &argv, p});
 
-	list<dsp*> dspList;
-	for (auto& p : wrapperList) {
-		dspList.push_back(p->get_dsp());
-		p->recall_state();
-	}
-
-	auto DSP = composite_dsp{dspList};
+	auto DSP = composite_dsp{wrapperList};
 	jackaudio audio;
 	audio.init(appname, &DSP);
 	audio.start();
 
-	develamp_main(wrapperList);
+	// the dsp classes are init'ed during audio.start() (which is the first
+	// point we know the sampling frequency. However because this causes all
+	// the values to be reset to their defaults we cannot recall the state until
+	// after that happens.
+	for (auto& p : wrapperList)
+		p->recall_state();
 
+	develamp_main(wrapperList);
 	audio.stop();
 	for (auto& p : wrapperList)
 		p->save_state();
+
 	return 0;
 }

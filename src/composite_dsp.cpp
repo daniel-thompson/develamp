@@ -12,6 +12,8 @@
  * (at your option) any later version.
  */
 
+#include "composite_dsp.h"
+
 #include <algorithm>
 #include <array>
 #include <exception>
@@ -19,23 +21,22 @@
 
 #include <assert.h>
 
-#include "composite_dsp.h"
+#include "dsp_wrapper.h"
+
 
 using std::begin;
 using std::end;
 
 composite_dsp::composite_dsp(const std::list<dsp*>& l)
 {
-	using std::remove;
-
 	for (auto p : l)
 		composite_list.push_back(p);
+}
 
-	// make sure this instance is removed (this code can be removed
-	// when the auto discovery code switches to factory methods.
-	composite_list.erase(
-			remove(begin(composite_list), end(composite_list), this),
-			end(composite_list));
+composite_dsp::composite_dsp(const std::list<dsp_wrapper*>& l)
+{
+	for (auto p : l)
+		composite_list.push_back(p->get_dsp());
 }
 
 composite_dsp::~composite_dsp()
