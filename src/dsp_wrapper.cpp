@@ -13,6 +13,7 @@
 
 #include "dsp_wrapper.h"
 
+#include <cctype>
 
 dsp_wrapper::dsp_wrapper(
 		char* name, int* pargc, char*** pargv, dsp_factory* f)
@@ -44,21 +45,17 @@ GtkWidget* dsp_wrapper::get_panel()
 }
 
 static std::string generate_filename(
-		const std::string& appname, const std::string& dspname)
+		const std::string& appname, std::string dspname)
 {
-	std::string fname;
 	const char* home = getenv("HOME");
 	if (NULL == home)
 		home = ".";
 
-	fname += home;
-	fname += "/.";
-	fname += appname;
-	fname += "-";
-	fname += dspname;
-	fname += "rc";
+	for (auto& c : dspname)
+		if (!isalnum(c))
+			c = '-';
 
-	return fname;
+	return std::string{home} + "/." + appname + "rc-" + dspname;
 }
 
 void dsp_wrapper::recall_state()
