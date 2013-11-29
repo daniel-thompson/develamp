@@ -3,6 +3,7 @@ declare author    "Daniel Thompson";
 declare copyright "2013";
 declare version   "0.1";
 declare license   "GPLv3+";
+declare priority  "20";
 
 import("effect.lib");
 import("filter.lib");

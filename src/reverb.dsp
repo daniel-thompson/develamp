@@ -7,7 +7,8 @@
  *   _ : reverb : _,!
  */
  
- declare name      "JCRev Reverb";
+declare name      "JCRev Reverb";
+declare priority  "90";
  
 reverb = *(0.06) : allpass_chain <: comb_bank :> _ <: (_, *(-1)) with {
 	allpass_chain = allpass(347,0.7) :

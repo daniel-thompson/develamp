@@ -15,6 +15,7 @@
 #define DEVELAMP_DSP_WRAPPER_H_
 
 #include <string>
+#include <memory>
 
 #include "dsp.h"
 #include "dsp_factory.h"
@@ -26,12 +27,12 @@ class dsp_wrapper {
 private:
 	dsp* signal_processor;
 	std::string appname;
-	dsp_factory* factory;
+	std::shared_ptr<dsp_factory> factory;
 	GTKUI gui;
 	FUI fui;
 
 public:
-	dsp_wrapper(char* name, int* pargc, char*** pargv, dsp_factory* f);
+	dsp_wrapper(const char* name, int* pargc, char*** pargv, std::shared_ptr<dsp_factory> f);
 	virtual ~dsp_wrapper();
 
 	dsp* get_dsp();

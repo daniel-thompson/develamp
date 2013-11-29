@@ -206,7 +206,7 @@ static void destroy_event( GtkWidget *widget, gpointer data )
     gtk_main_quit ();
 }
 
-GTKUI::GTKUI(char * name, int* pargc, char*** pargv) 
+GTKUI::GTKUI(const char * name, int* pargc, char*** pargv)
 {
     if (!fInitialized) {
         gtk_init(pargc, pargv);

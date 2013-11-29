@@ -84,20 +84,21 @@ static void develamp_main(list<dsp_wrapper*>& wrapperList)
  */
 int main(int argc, char *argv[])
 {
-	char	appname[256];
-	char  	rcfilename[256];
-	char* 	home = getenv("HOME");
+	auto appname = std::string{ basename(argv[0]) };
 
-	snprintf(appname, 255, "%s", basename(argv[0]));
-	snprintf(rcfilename, 255, "%s/.%src", home, appname);
+	// sort the instances into priority order (the lambda can be made more
+	// beautiful when C++14 rolls around).
+	dsp_factory::registry.sort([](std::shared_ptr<dsp_factory>& x, std::shared_ptr<dsp_factory>& y) {
+		return x->get_priority() < y->get_priority();
+	});
 
 	list<dsp_wrapper*> wrapperList;
-	for (auto& p : dsp_factory::instances)
-		wrapperList.push_back(new dsp_wrapper{appname, &argc, &argv, p});
+	for (auto& p : dsp_factory::registry)
+		wrapperList.push_back(new dsp_wrapper{ appname.c_str(), &argc, &argv, p });
 
-	auto DSP = composite_dsp{wrapperList};
+	auto DSP = composite_dsp{ wrapperList };
 	jackaudio audio;
-	audio.init(appname, &DSP);
+	audio.init(appname.c_str(), &DSP);
 	audio.start();
 
 	// the dsp classes are init'ed during audio.start() (which is the first

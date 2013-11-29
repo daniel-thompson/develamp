@@ -13,5 +13,16 @@
 
 #include "dsp_factory.h"
 
-std::list<dsp_factory*> dsp_factory::instances;
+std::list<std::shared_ptr<dsp_factory>> dsp_factory::registry;
 
+int dsp_factory::get_priority()
+{
+	std::string s = get_meta("priority");
+
+	// place it in the middle if there is no priority
+	if (s == "")
+		return 50;
+
+	// this will throw an exception is priority contains illegal characters
+	return std::stoi(s);
+}

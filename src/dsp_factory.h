@@ -18,6 +18,7 @@
 #include <iterator>
 #include <list>
 #include <map>
+#include <memory>
 
 #include "dsp.h"
 #include "meta.h"
@@ -45,20 +46,23 @@ protected:
 	virtual dsp* manufacture_dsp() const = 0;
 
 public:
-	static std::list<dsp_factory*> instances;
+	static std::list<std::shared_ptr<dsp_factory>> registry;
+
+	template <class F>
+	static bool make_factory() {
+		registry.emplace_back(std::make_shared<F>());
+		return true;
+	}
 
 	dsp_factory() {
-		instances.push_back(this);
 	}
 
 	virtual ~dsp_factory() {
-		instances.erase(std::remove(std::begin(instances),
-				           std::end(instances), this), std::end(instances));
 	}
 
 	// this is a ham-fisted way to start us on the road to the NVI design pattern... it seemed like
 	// a good idea at the time.
-	dsp* create_dsp() const {
+	dsp* make_dsp() const {
 		return manufacture_dsp();
 	}
 
@@ -72,9 +76,7 @@ public:
 		return get_meta("name");
 	}
 
-	int get_priority() {
-		return std::stoi(get_meta("priority"));
-	}
+	int get_priority();
 };
 
 #endif // DEVELAMP_DSP_FACTORY_H_

@@ -14,9 +14,10 @@
 #include "dsp_wrapper.h"
 
 #include <cctype>
+#include <memory>
 
 dsp_wrapper::dsp_wrapper(
-		char* name, int* pargc, char*** pargv, dsp_factory* f)
+		const char* name, int* pargc, char*** pargv, std::shared_ptr<dsp_factory> f)
 : signal_processor{nullptr}, appname{name}, factory{f}, gui{name, pargc, pargv}, fui{}
 {
 }
@@ -30,7 +31,7 @@ dsp_wrapper::~dsp_wrapper()
 dsp* dsp_wrapper::get_dsp()
 {
 	if (nullptr == signal_processor) {
-		signal_processor = factory->create_dsp();
+		signal_processor = factory->make_dsp();
 		signal_processor->buildUserInterface(&gui);
 		signal_processor->buildUserInterface(&fui);
 	}

@@ -79,4 +79,4 @@ public:
 	}
 };
 
-static FAUSTFACTORY staticdsp;
+static bool unused = dsp_factory::make_factory<FAUSTFACTORY>();

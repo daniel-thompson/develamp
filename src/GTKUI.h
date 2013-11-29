@@ -56,7 +56,7 @@ class GTKUI : public GUI
     static const gboolean expand = TRUE;
     static const gboolean fill = TRUE;
          
-    GTKUI(char * name, int* pargc, char*** pargv);
+    GTKUI(const char * name, int* pargc, char*** pargv);
 
     // -- Labels and metadata
 
