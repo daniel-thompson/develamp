@@ -25,7 +25,14 @@ AC_PROG_GREP
 AC_PATH_PROG([FAUST],[faust])
 AX_PROG_FAUST_VERSION([0.9.46],,[AC_MSG_ERROR([faust version is insufficient])])
 
+AX_CFLAGS_WARN_ALL
+AX_APPEND_COMPILE_FLAGS([-fsanitize=address])
+AX_APPEND_COMPILE_FLAGS([-fno-omit-frame-pointer])
+
 AC_LANG([C++])
+AX_CXXFLAGS_WARN_ALL
+AX_APPEND_COMPILE_FLAGS([-fsanitize=address])
+AX_APPEND_COMPILE_FLAGS([-fno-omit-frame-pointer])
 
 dnl gl_VALGRIND_TESTS
 AC_SEARCH_LIBS([cos], [m])
@@ -40,9 +47,7 @@ PKG_CHECK_MODULES([JACK], [jack >= 0.9])
 dnl This flag is required for the GTK+ signal autoconnection to work
 dnl AX_APPEND_LINK_FLAGS([-export-dynamic])
 
-dnl Keep these near the bottom - adding -Werror breaks various tests
-AX_CFLAGS_WARN_ALL
-AX_CXXFLAGS_WARN_ALL
+dnl Keep this near the bottom - adding -Werror breaks various tests
 AX_APPEND_COMPILE_FLAGS([-Werror])
 
 AC_CONFIG_FILES(Makefile)
