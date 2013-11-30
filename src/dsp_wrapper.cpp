@@ -18,19 +18,17 @@
 
 dsp_wrapper::dsp_wrapper(
 		const char* name, int* pargc, char*** pargv, std::shared_ptr<dsp_factory> f)
-: signal_processor{nullptr}, appname{name}, factory{f}, gui{name, pargc, pargv}, fui{}
+: signal_processor{}, appname{name}, factory{f}, gui{name, pargc, pargv}, fui{}
 {
 }
 
 dsp_wrapper::~dsp_wrapper()
 {
-	if (nullptr != signal_processor)
-		delete signal_processor;
 }
 
-dsp* dsp_wrapper::get_dsp()
+std::shared_ptr<dsp> dsp_wrapper::get_dsp()
 {
-	if (nullptr == signal_processor) {
+	if (!signal_processor) {
 		signal_processor = factory->make_dsp();
 		signal_processor->buildUserInterface(&gui);
 		signal_processor->buildUserInterface(&fui);

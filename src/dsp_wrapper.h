@@ -25,7 +25,7 @@
 
 class dsp_wrapper {
 private:
-	dsp* signal_processor;
+	std::shared_ptr<dsp> signal_processor;
 	std::string appname;
 	std::shared_ptr<dsp_factory> factory;
 	GTKUI gui;
@@ -35,7 +35,7 @@ public:
 	dsp_wrapper(const char* name, int* pargc, char*** pargv, std::shared_ptr<dsp_factory> f);
 	virtual ~dsp_wrapper();
 
-	dsp* get_dsp();
+	std::shared_ptr<dsp> get_dsp();
 	GtkWidget* get_panel();
 
 	void recall_state();

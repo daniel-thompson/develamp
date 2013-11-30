@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <cstdlib>
+
 #include "GTKUI.h"
 #include "FUI.h"
 #include "misc.h"
@@ -42,10 +44,10 @@ static gboolean do_update_all_guis(gpointer)
     return TRUE;
 }
 
-static void develamp_main(list<dsp_wrapper*>& wrapperList)
+static void develamp_main(list<unique_ptr<dsp_wrapper>>& wrapperList)
 {
 	auto stack = gtk_stack_new();
-	for (auto w : wrapperList) {
+	for (auto& w : wrapperList) {
 		auto panel = w->get_panel();
 		gtk_stack_add_titled(GTK_STACK(stack), panel, w->get_name().c_str(), w->get_name().c_str());
 	}
@@ -92,9 +94,9 @@ int main(int argc, char *argv[])
 		return x->get_priority() < y->get_priority();
 	});
 
-	list<dsp_wrapper*> wrapperList;
+	list<unique_ptr<dsp_wrapper>> wrapperList;
 	for (auto& p : dsp_factory::registry)
-		wrapperList.push_back(new dsp_wrapper{ appname.c_str(), &argc, &argv, p });
+		wrapperList.push_back(unique_ptr<dsp_wrapper>{new dsp_wrapper{ appname.c_str(), &argc, &argv, p }});
 
 	auto DSP = composite_dsp{ wrapperList };
 	jackaudio audio;

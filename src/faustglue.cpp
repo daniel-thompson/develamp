@@ -74,8 +74,8 @@ public:
 		FAUSTCLASS::metadata(&meta);
 	}
 
-	virtual dsp* manufacture_dsp() const override {
-		return new FAUSTCLASS;
+	virtual unique_ptr<dsp> manufacture_dsp() const override {
+		return unique_ptr<dsp>{new FAUSTCLASS};
 	}
 };
 

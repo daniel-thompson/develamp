@@ -27,15 +27,9 @@
 using std::begin;
 using std::end;
 
-composite_dsp::composite_dsp(const std::list<dsp*>& l)
+composite_dsp::composite_dsp(const std::list<std::unique_ptr<dsp_wrapper>>& l)
 {
-	for (auto p : l)
-		composite_list.push_back(p);
-}
-
-composite_dsp::composite_dsp(const std::list<dsp_wrapper*>& l)
-{
-	for (auto p : l)
+	for (auto& p : l)
 		composite_list.push_back(p->get_dsp());
 }
 

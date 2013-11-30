@@ -16,20 +16,20 @@
 #define DEVELAMP_COMPOSITE_DSP_H_
 
 #include <list>
+#include <memory>
 
 #include "dsp.h"
 class dsp_wrapper;
 
 class composite_dsp : public dsp {
 protected:
-	std::list<dsp*> composite_list;
+	std::list<std::shared_ptr<dsp>> composite_list;
 
 	std::vector<FAUSTFLOAT> inputs[2];
 	std::vector<FAUSTFLOAT> outputs[2];
 
 public:
-	composite_dsp(const std::list<dsp*>& l);
-	composite_dsp(const std::list<dsp_wrapper*>& l);
+	composite_dsp(const std::list<std::unique_ptr<dsp_wrapper>>& l);
 	virtual ~composite_dsp() override;
 
 	virtual int getNumInputs() override;

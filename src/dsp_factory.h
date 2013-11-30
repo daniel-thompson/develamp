@@ -43,14 +43,14 @@ class dsp_factory {
 protected:
 	map_meta meta;
 
-	virtual dsp* manufacture_dsp() const = 0;
+	virtual std::unique_ptr<dsp> manufacture_dsp() const = 0;
 
 public:
 	static std::list<std::shared_ptr<dsp_factory>> registry;
 
 	template <class F>
 	static bool make_factory() {
-		registry.emplace_back(std::make_shared<F>());
+		registry.push_back(std::make_shared<F>());
 		return true;
 	}
 
@@ -62,7 +62,7 @@ public:
 
 	// this is a ham-fisted way to start us on the road to the NVI design pattern... it seemed like
 	// a good idea at the time.
-	dsp* make_dsp() const {
+	std::unique_ptr<dsp> make_dsp() const {
 		return manufacture_dsp();
 	}
 
