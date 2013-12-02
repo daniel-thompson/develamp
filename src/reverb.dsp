@@ -8,9 +8,12 @@
  */
  
 declare name      "JCRev Reverb";
+declare license   "GPLv3+";
 declare priority  "90";
+
+import("gui.lib");
  
-reverb = *(0.06) : allpass_chain <: comb_bank :> _ <: (_, *(-1)) with {
+reverb(bypass) = *(0.06) : allpass_chain <: comb_bank :> *(bypass) <: (_, *(-1)) with {
 	allpass_chain = allpass(347,0.7) :
 			allpass(113,0.7) :
 			allpass( 37,0.7) with {
@@ -44,5 +47,11 @@ reverb = *(0.06) : allpass_chain <: comb_bank :> _ <: (_, *(-1)) with {
 	};
 };
 
-process = reverb;
+reverbapp = (gui, _) : reverb with {
+	bypass = bypassgui;
+
+	gui = hgroup("[0] Reverb", bypass);
+};
+
+process = reverbapp;
 
