@@ -1,0 +1,20 @@
+declare name "RF-GUI Utility Library";
+declare author    "Daniel Thompson";
+declare copyright "2013";
+declare version   "0.1";
+declare license   "GPLv3+";
+
+import("util.lib");
+
+//
+// Basic pedal controls (with correct relative ordering)
+//
+
+bypassgui = (1 - checkbox("[1] Bypass")) : smoothctl;
+drivegui = hslider("[2] Drive [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+gaingui = hslider("[3] Gain [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+wetdrygui = hslider("[7] Wet dry [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+volumegui = hslider("[8] Volume [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+mastergui = hslider("[9] Master [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+
+

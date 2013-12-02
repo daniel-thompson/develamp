@@ -10,9 +10,8 @@ import("filter.lib");
 import("maxmsp.lib");
 import("music.lib");
 
+import("gui.lib");
 import("util.lib");
-
-vumeter = component("vumeter.dsp");
 
 // Tuneable value
 aa_cutoff = hslider("[1] Buffer AA cutoff [unit:Hz]", 2560, 320, 10240, 10);
@@ -41,17 +40,19 @@ feedbackstage(gain) = (+ : buffer(gain)) ~ feedback with {
 };
 
 // TODO: Add a shelving filter to boost frequencies below the feedback cutoff
-bitshrieker(gain, volume) =
-	buffer(db2linear(-42)) : feedbackstage(gain) : buffer(volume) : dcblocker;
+bitshrieker(bypass, gain, volume) =
+	buffer(db2linear(-42)) : feedbackstage(gain) : buffer(volume) : *(bypass) : dcblocker;
 
 bitshriekerapp = (gui, _) : bitshrieker with {
-	gain = hslider("[0] Gain [style: knob]", 5, 0, 10, 0.1)
+	bypass = bypassgui;
+	gain = hslider("[2] Gain [style: knob]", 5, 0, 10, 0.1)
 		: rerange(0, 10, -96, 0) : db2linear : smoothctl;
-	// TODO: add a tone control (probably based on the feedback cutoff
-	volume = hslider("[1] Volume [style: knob]", 5, 0, 10, 0.1)
-		: rerange(0, 10, -96, 0) : db2linear : smoothctl : vumeter;
-		
-	gui = hgroup("[0] Bitshrieker", gain, volume);
+	// TODO: add a tone control (probably based on the feedback cutoff)
+	volume = hslider("[3] Volume [style: knob]", 5, 0, 10, 0.1)
+		: rerange(0, 10, -96, 0) : db2linear : smoothctl;
+
+	gui = hgroup("[0] Bitshrieker", bypass, gain, volume);
+
 };
 
 process = bitshriekerapp;

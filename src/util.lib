@@ -5,12 +5,12 @@ declare version "1.0";
 declare license "GPLv3+";
 declare reference "http://redfelineninja.org.uk/software/rfeffects.html";
 
+import("filter.lib");
 
 //
 // Additional maths functions
 
 sign(x) = if(x >= 0, 1, -1);
-
 
 //
 // Basic smoothing functions
