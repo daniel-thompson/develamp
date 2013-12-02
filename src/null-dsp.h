@@ -19,8 +19,8 @@
 #include "audio.h"
 #include "dsp.h"
 
-static int		_srate(jack_nframes_t nframes, void *);
-static int		_process (jack_nframes_t nframes, void *client);
+static int _srate(jack_nframes_t nframes, void*);
+static int _process(jack_nframes_t nframes, void* client);
 
 /******************************************************************************
 *******************************************************************************
@@ -31,28 +31,41 @@ static int		_process (jack_nframes_t nframes, void *client);
 *******************************************************************************/
 
 class nullaudio : public audio {
-	dsp*			fDsp;
-	int			fNumInChans;			// 	number of input channels
-	int			fNumOutChans;			// 	number of output channels
+    dsp* fDsp;
+    int fNumInChans; // number of input channels
+    int fNumOutChans; // number of output channels
 
  public:
-	nullaudio() : fDsp(nullptr), fNumInChans(0), fNumOutChans(0) {}
-	virtual ~nullaudio() { stop(); }
+     nullaudio()
+         : fDsp(nullptr)
+         , fNumInChans(0)
+         , fNumOutChans(0)
+     {
+     }
 
-	virtual bool init(const char*name, dsp* DSP) {
-		fDsp = DSP;
-		fNumInChans  = fDsp->getNumInputs();
-		fNumOutChans = fDsp->getNumOutputs();
-		fDsp->init(44100);
-		return true;
-	}
+     virtual ~nullaudio()
+     {
+         stop();
+     }
 
-	virtual bool start() {
-		return true;
-	}
+     virtual bool init(const char* name, dsp* DSP)
+     {
+         fDsp = DSP;
+         fNumInChans = fDsp->getNumInputs();
+         fNumOutChans = fDsp->getNumOutputs();
+         fDsp->init(44100);
 
-	virtual void stop() {
-	}
+         return true;
+     }
+
+     virtual bool start()
+     {
+         return true;
+     }
+
+     virtual void stop()
+     {
+     }
 };
 
 #endif // DEVELAMP_NULL_DSP_H_

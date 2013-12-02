@@ -25,17 +25,17 @@
 
 using namespace std;
 
-static gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
+static gint delete_event(GtkWidget* widget, GdkEvent* event, gpointer data)
 {
     return FALSE;
 }
 
-static void destroy_event( GtkWidget *widget, gpointer data )
+static void destroy_event(GtkWidget* widget, gpointer data)
 {
-    gtk_main_quit ();
+    gtk_main_quit();
 }
 
-static gboolean do_update_all_guis(gpointer)
+static gboolean do_update_all_guis(gpointer unused)
 {
     GUI::updateAllGuis();
     return TRUE;
@@ -49,56 +49,61 @@ static gboolean do_update_all_guis(gpointer)
  * we assume that new windows will appear on the same desktop as the currently
  * active window.
  */
-static void gtk_window_get_monitor_geometry(GtkWindow *window, GdkRectangle *dest)
+static void gtk_window_get_monitor_geometry(GtkWindow* window,
+                                            GdkRectangle* dest)
 {
-	auto screen = gtk_window_get_screen(window);
-	auto raw_window = gdk_screen_get_active_window(screen);
-	auto monitor_id = gdk_screen_get_monitor_at_window(screen, raw_window);
+    auto screen = gtk_window_get_screen(window);
+    auto raw_window = gdk_screen_get_active_window(screen);
+    auto monitor_id = gdk_screen_get_monitor_at_window(screen, raw_window);
 
-	gdk_screen_get_monitor_geometry(screen, monitor_id, dest);
+    gdk_screen_get_monitor_geometry(screen, monitor_id, dest);
 }
 
 static void develamp_main(list<unique_ptr<dsp_wrapper>>& wrapperList)
 {
-	auto stack = gtk_stack_new();
-	for (auto& w : wrapperList) {
-		auto panel = w->get_panel();
-		auto scroller = gtk_scrolled_window_new(nullptr, nullptr);
-		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroller),
-				GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-		gtk_container_add(GTK_CONTAINER(scroller), panel);
-		gtk_stack_add_titled(GTK_STACK(stack), scroller, w->get_name().c_str(), w->get_name().c_str());
-	}
+    auto stack = gtk_stack_new();
+    for (auto& w : wrapperList) {
+        auto panel = w->get_panel();
+        auto scroller = gtk_scrolled_window_new(nullptr, nullptr);
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroller),
+                                       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+        gtk_container_add(GTK_CONTAINER(scroller), panel);
+        gtk_stack_add_titled(GTK_STACK(stack), scroller, w->get_name().c_str(),
+                             w->get_name().c_str());
+    }
 
-	auto switcher = gtk_stack_switcher_new();
-	gtk_orientable_set_orientation(GTK_ORIENTABLE(switcher), GTK_ORIENTATION_VERTICAL);
-	gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(stack));
+    auto switcher = gtk_stack_switcher_new();
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(switcher),
+                                   GTK_ORIENTATION_VERTICAL);
+    gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher),
+                                 GTK_STACK(stack));
 
-	auto paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_paned_add1(GTK_PANED(paned), switcher);
-	gtk_paned_add2(GTK_PANED(paned), stack);
+    auto paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+    gtk_paned_add1(GTK_PANED(paned), switcher);
+    gtk_paned_add2(GTK_PANED(paned), stack);
 
-	auto window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_container_set_border_width(GTK_CONTAINER(window), 6);
-	gtk_window_set_title (GTK_WINDOW (window), "Research and Development Amplifier");
-	g_signal_connect (window, "delete_event", G_CALLBACK(delete_event), NULL);
-	g_signal_connect (window, "destroy", G_CALLBACK(destroy_event), NULL);
-	gtk_container_add(GTK_CONTAINER(window), paned);
+    auto window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 6);
+    gtk_window_set_title(GTK_WINDOW(window),
+                         "Research and Development Amplifier");
+    g_signal_connect(window, "delete_event", G_CALLBACK(delete_event), NULL);
+    g_signal_connect(window, "destroy", G_CALLBACK(destroy_event), NULL);
+    gtk_container_add(GTK_CONTAINER(window), paned);
 
-	auto sz = GdkRectangle{};
-	gtk_window_get_monitor_geometry(GTK_WINDOW(window), &sz);
-	gtk_window_set_default_size(GTK_WINDOW(window), -1, sz.height - 100);
+    auto sz = GdkRectangle{};
+    gtk_window_get_monitor_geometry(GTK_WINDOW(window), &sz);
+    gtk_window_set_default_size(GTK_WINDOW(window), -1, sz.height - 100);
 
-	gtk_widget_show_all(window);
+    gtk_widget_show_all(window);
 
-	do_update_all_guis(nullptr);
-	g_timeout_add(40, do_update_all_guis, 0);
-	gtk_main ();
+    do_update_all_guis(nullptr);
+    g_timeout_add(40, do_update_all_guis, 0);
+    gtk_main();
 
 #if 0
-	for (auto& gui : guiList) {
-		gui->stop();
-	}
+    for (auto& gui : guiList) {
+	gui->stop();
+    }
 #endif
 }
 
@@ -109,34 +114,37 @@ static void develamp_main(list<unique_ptr<dsp_wrapper>>& wrapperList)
  */
 int main(int argc, char *argv[])
 {
-	auto appname = std::string{ basename(argv[0]) };
+    auto appname = std::string{basename(argv[0])};
 
-        // sort the instances into priority order (the lambda can be made more
-	// beautiful when C++14 rolls around).
-	dsp_factory::registry.sort([](std::shared_ptr<dsp_factory>& x, std::shared_ptr<dsp_factory>& y) {
-		return x->get_priority() < y->get_priority();
-	});
+    // sort the instances into priority order (the lambda can be made more
+    // beautiful when C++14 rolls around).
+    dsp_factory::registry.sort([](std::shared_ptr<dsp_factory>& x,
+                                  std::shared_ptr<dsp_factory>& y) {
+        return x->get_priority() < y->get_priority();
+    });
 
-	list<unique_ptr<dsp_wrapper>> wrapperList;
-	for (auto& p : dsp_factory::registry)
-		wrapperList.push_back(unique_ptr<dsp_wrapper>{new dsp_wrapper{ appname.c_str(), &argc, &argv, p }});
+    list<unique_ptr<dsp_wrapper>> wrapperList;
+    for (auto& p : dsp_factory::registry) {
+        wrapperList.push_back(unique_ptr<dsp_wrapper>{
+            new dsp_wrapper{appname.c_str(), &argc, &argv, p}});
+    }
 
-	auto DSP = composite_dsp{ wrapperList };
-	jackaudio audio;
-	audio.init(appname.c_str(), &DSP);
-	audio.start();
+    auto DSP = composite_dsp{wrapperList};
+    jackaudio audio;
+    audio.init(appname.c_str(), &DSP);
+    audio.start();
 
-	// the dsp classes are init'ed during audio.start() (which is the first
-	// point we know the sampling frequency. However because this causes all
-	// the values to be reset to their defaults we cannot recall the state until
-	// after that happens.
-	for (auto& p : wrapperList)
-		p->recall_state();
+    // the dsp classes are init'ed during audio.start() (which is the first
+    // point we know the sampling frequency. However because this causes all
+    // the values to be reset to their defaults we cannot recall the state until
+    // after that happens.
+    for (auto& p : wrapperList)
+        p->recall_state();
 
-	develamp_main(wrapperList);
-	audio.stop();
-	for (auto& p : wrapperList)
-		p->save_state();
+    develamp_main(wrapperList);
+    audio.stop();
+    for (auto& p : wrapperList)
+        p->save_state();
 
-	return 0;
+    return 0;
 }

@@ -64,19 +64,21 @@ using namespace std;
 //----------------------------------------------------------------
 
 // generate the factory class name
-#define __FAUSTFACTORY(x) x ## _factory
+#define __FAUSTFACTORY(x) x##_factory
 #define _FAUSTFACTORY(x) __FAUSTFACTORY(x)
 #define FAUSTFACTORY _FAUSTFACTORY(FAUSTCLASS)
 
 class FAUSTFACTORY : public dsp_factory {
 public:
-	FAUSTFACTORY() {
-		FAUSTCLASS::metadata(&meta);
-	}
+    FAUSTFACTORY()
+    {
+        FAUSTCLASS::metadata(&meta);
+    }
 
-	virtual unique_ptr<dsp> manufacture_dsp() const override {
-		return unique_ptr<dsp>{new FAUSTCLASS};
-	}
+    virtual unique_ptr<dsp> manufacture_dsp() const override
+    {
+        return unique_ptr<dsp>{new FAUSTCLASS};
+    }
 };
 
 static bool unused = dsp_factory::make_factory<FAUSTFACTORY>();

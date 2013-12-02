@@ -22,36 +22,39 @@
 #include "GTKUI.h"
 #include "FUI.h"
 
-
 class dsp_wrapper {
-private:
-	std::shared_ptr<dsp> signal_processor;
-	std::string appname;
-	std::shared_ptr<dsp_factory> factory;
-	GTKUI gui;
-	FUI fui;
-
 public:
-	dsp_wrapper(const char* name, int* pargc, char*** pargv, std::shared_ptr<dsp_factory> f);
-	virtual ~dsp_wrapper();
+    dsp_wrapper(const char* name, int* pargc, char*** pargv,
+                std::shared_ptr<dsp_factory> f);
+    virtual ~dsp_wrapper();
 
-	std::shared_ptr<dsp> get_dsp();
-	GtkWidget* get_panel();
+    std::shared_ptr<dsp> get_dsp();
+    GtkWidget* get_panel();
 
-	void recall_state();
-	void save_state();
+    void recall_state();
+    void save_state();
 
-	const std::string& get_meta(const std::string& key) {
-		return factory->get_meta(key);
-	}
+    const std::string& get_meta(const std::string& key)
+    {
+        return factory->get_meta(key);
+    }
 
-	const std::string& get_name() {
-		return factory->get_name();
-	}
+    const std::string& get_name()
+    {
+        return factory->get_name();
+    }
 
-	int get_priority() {
-		return factory->get_priority();
-	}
+    int get_priority()
+    {
+        return factory->get_priority();
+    }
+
+private:
+    std::shared_ptr<dsp> signal_processor;
+    std::string appname;
+    std::shared_ptr<dsp_factory> factory;
+    GTKUI gui;
+    FUI fui;
 };
 
 #endif // DEVELAMP_DSP_WRAPPER_H_

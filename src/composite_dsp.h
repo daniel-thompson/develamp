@@ -23,20 +23,21 @@ class dsp_wrapper;
 
 class composite_dsp : public dsp {
 protected:
-	std::list<std::shared_ptr<dsp>> composite_list;
+    std::list<std::shared_ptr<dsp>> composite_list;
 
-	std::vector<FAUSTFLOAT> inputs[2];
-	std::vector<FAUSTFLOAT> outputs[2];
+    std::vector<FAUSTFLOAT> inputs[2];
+    std::vector<FAUSTFLOAT> outputs[2];
 
 public:
-	composite_dsp(const std::list<std::unique_ptr<dsp_wrapper>>& l);
-	virtual ~composite_dsp() override;
+    composite_dsp(const std::list<std::unique_ptr<dsp_wrapper>>& l);
+    virtual ~composite_dsp() override;
 
-	virtual int getNumInputs() override;
-	virtual int getNumOutputs() override;
-	virtual void buildUserInterface(UI* interface) override;
-	virtual void init(int samplingRate) override;
- 	virtual void compute(int len, FAUSTFLOAT** rawinputs, FAUSTFLOAT** rawoutputs) override;
+    virtual int getNumInputs() override;
+    virtual int getNumOutputs() override;
+    virtual void buildUserInterface(UI* interface) override;
+    virtual void init(int samplingRate) override;
+    virtual void compute(int len, FAUSTFLOAT** rawinputs,
+                         FAUSTFLOAT** rawoutputs) override;
 };
 
 #endif // DEVELAMP_COMPOSITE_DSP_H_
