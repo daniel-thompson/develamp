@@ -30,8 +30,6 @@ namespace gtk_knob
 
 class GtkKnob
 {
-private:
-	double start_x, start_y, max_value;
 public:
 	GtkRange parent;
 	int last_quadrant;
