@@ -14,6 +14,11 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
+# __rt_data is found in code inherited from guitarix where it is
+# used to mlock() all runtime data. Defining it to empty helps us
+# parse the code.
+DEVELAMP_CPPFLAGS = -D__rt_data= -I$(top_srcdir)/src -I$(top_srcdir)/src/guitarix
+
 bin_PROGRAMS = \
 	src/develamp
 
@@ -26,10 +31,14 @@ TESTS_ENVIRONMENT=$(VALGRIND)
 
 src_develamp_DSP = \
 	src/bitshrieker.dsp \
-	src/reverb.dsp
+	src/reverb.dsp \
+	src/cleanamp.dsp \
+	src/vumeter.dsp
 src_develamp_CLEAN = \
 	src/bitshrieker.cpp \
-	src/reverb.cpp
+	src/reverb.cpp \
+	src/cleanamp.cpp \
+	src/vumeter.cpp
 
 src_develamp_SOURCES = \
 	src/main.cpp \
@@ -40,7 +49,7 @@ src_develamp_SOURCES = \
 	src/GUI.cpp \
 	src/GTKUI.cpp \
 	$(src_develamp_DSP)
-src_develamp_CPPFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS)
+src_develamp_CPPFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) $(DEVELAMP_CPPFLAGS)
 src_develamp_LDADD = $(GTK_LIBS) $(JACK_LIBS)
 
 CLEANFILES += $(src_develamp_CLEAN)

@@ -12,10 +12,7 @@
  * (at your option) any later version.
  */
 
-#include <libgen.h>
-#include <stdlib.h>
 #include <iostream>
-
 #include <cstdlib>
 
 #include "GTKUI.h"
@@ -44,12 +41,33 @@ static gboolean do_update_all_guis(gpointer)
     return TRUE;
 }
 
+/*!
+ * Discover the geometry of the monitor that a window might appear on.
+ *
+ * This function uses a heuristic that will trivially work for single monitors
+ * but relies on window manager behaviour for multi-monitor setups. Specifically
+ * we assume that new windows will appear on the same desktop as the currently
+ * active window.
+ */
+static void gtk_window_get_monitor_geometry(GtkWindow *window, GdkRectangle *dest)
+{
+	auto screen = gtk_window_get_screen(window);
+	auto raw_window = gdk_screen_get_active_window(screen);
+	auto monitor_id = gdk_screen_get_monitor_at_window(screen, raw_window);
+
+	gdk_screen_get_monitor_geometry(screen, monitor_id, dest);
+}
+
 static void develamp_main(list<unique_ptr<dsp_wrapper>>& wrapperList)
 {
 	auto stack = gtk_stack_new();
 	for (auto& w : wrapperList) {
 		auto panel = w->get_panel();
-		gtk_stack_add_titled(GTK_STACK(stack), panel, w->get_name().c_str(), w->get_name().c_str());
+		auto scroller = gtk_scrolled_window_new(nullptr, nullptr);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroller),
+				GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+		gtk_container_add(GTK_CONTAINER(scroller), panel);
+		gtk_stack_add_titled(GTK_STACK(stack), scroller, w->get_name().c_str(), w->get_name().c_str());
 	}
 
 	auto switcher = gtk_stack_switcher_new();
@@ -66,6 +84,11 @@ static void develamp_main(list<unique_ptr<dsp_wrapper>>& wrapperList)
 	g_signal_connect (window, "delete_event", G_CALLBACK(delete_event), NULL);
 	g_signal_connect (window, "destroy", G_CALLBACK(destroy_event), NULL);
 	gtk_container_add(GTK_CONTAINER(window), paned);
+
+	auto sz = GdkRectangle{};
+	gtk_window_get_monitor_geometry(GTK_WINDOW(window), &sz);
+	gtk_window_set_default_size(GTK_WINDOW(window), -1, sz.height - 100);
+
 	gtk_widget_show_all(window);
 
 	do_update_all_guis(nullptr);
@@ -88,7 +111,7 @@ int main(int argc, char *argv[])
 {
 	auto appname = std::string{ basename(argv[0]) };
 
-	// sort the instances into priority order (the lambda can be made more
+        // sort the instances into priority order (the lambda can be made more
 	// beautiful when C++14 rolls around).
 	dsp_factory::registry.sort([](std::shared_ptr<dsp_factory>& x, std::shared_ptr<dsp_factory>& y) {
 		return x->get_priority() < y->get_priority();
