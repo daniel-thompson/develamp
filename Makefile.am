@@ -47,7 +47,7 @@ CLEANFILES += $(src_develamp_CLEAN)
 
 .dsp.cpp:
 	@echo "  FAUST    $@"
-	@faust -a $(top_srcdir)/src/faustglue.cpp -cn `basename $< .dsp` -o $@ $<
+	@faust -a $(top_srcdir)/src/faustglue.cpp -I $(top_srcdir)/src/guitarix -svg -cn `basename $< .dsp`dsp -o $@ $<
 
 #
 # Manual dependancies
