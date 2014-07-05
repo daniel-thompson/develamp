@@ -12,8 +12,9 @@ declare license   "GPLv3+";
 declare priority  "90";
 
 import("gui.lib");
+import("util.lib");
  
-reverb(bypass) = *(0.06) : allpass_chain <: comb_bank :> *(bypass) <: (_, *(-1)) with {
+reverb(bypass) = cutoutmono(bypass, *(0.06) : allpass_chain <: comb_bank :> _) <: (_, *(-1)) with {
 	allpass_chain = allpass(347,0.7) :
 			allpass(113,0.7) :
 			allpass( 37,0.7) with {
