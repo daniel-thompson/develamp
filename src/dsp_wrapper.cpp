@@ -16,6 +16,15 @@
 #include <cctype>
 #include <memory>
 
+dsp_wrapper::dsp_wrapper(const char* name, std::shared_ptr<dsp_factory> f)
+    : signal_processor{}
+    , appname{name}
+    , factory{f}
+    , gui{name}
+    , fui{}
+{
+}
+
 dsp_wrapper::dsp_wrapper(const char* name, int* pargc, char*** pargv,
                          std::shared_ptr<dsp_factory> f)
     : signal_processor{}

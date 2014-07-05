@@ -24,6 +24,7 @@
 
 class dsp_wrapper {
 public:
+    dsp_wrapper(const char* name, std::shared_ptr<dsp_factory> f);
     dsp_wrapper(const char* name, int* pargc, char*** pargv,
                 std::shared_ptr<dsp_factory> f);
     virtual ~dsp_wrapper();
