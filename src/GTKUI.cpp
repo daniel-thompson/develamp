@@ -206,23 +206,36 @@ static void destroy_event( GtkWidget *widget, gpointer data )
     gtk_main_quit ();
 }
 
-GTKUI::GTKUI(const char * name, int* pargc, char*** pargv)
+void GTKUI::makeInterface(const char *name)
+{
+    fWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    // gtk_container_set_border_width (GTK_CONTAINER (fWindow), 10);
+    gtk_window_set_title(GTK_WINDOW(fWindow), name);
+    g_signal_connect(fWindow, "delete_event", G_CALLBACK(delete_event), NULL);
+    g_signal_connect(fWindow, "destroy", G_CALLBACK(destroy_event), NULL);
+
+    fTop = 0;
+    fBox[fTop] = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    fMode[fTop] = kBoxMode;
+}
+
+GTKUI::GTKUI(const char* name)
+    : fStopped{false}
+{
+    // this is a precondition for calling this constructor
+    fInitialized = true;
+
+    makeInterface(name);
+}
+
+GTKUI::GTKUI(const char* name, int* pargc, char*** pargv)
+    : fStopped{false}
 {
     if (!fInitialized) {
         gtk_init(pargc, pargv);
         fInitialized = true;
     }
-    
-    fWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    //gtk_container_set_border_width (GTK_CONTAINER (fWindow), 10);
-    gtk_window_set_title (GTK_WINDOW (fWindow), name);
-    g_signal_connect (fWindow, "delete_event", G_CALLBACK(delete_event), NULL);
-    g_signal_connect (fWindow, "destroy", G_CALLBACK(destroy_event), NULL);
-
-    fTop = 0;
-    fBox[fTop] = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    fMode[fTop] = kBoxMode;
-    fStopped = false;
+    makeInterface(name);
 }
 
 // empilement des boites

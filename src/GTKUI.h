@@ -39,6 +39,7 @@ class GTKUI : public GUI
     static std::set<FAUSTFLOAT*>             	fKnobSet;       // set of widget zone to be knobs
 	std::string									gGroupTooltip;
     
+    void makeInterface(const char * name);
     bool isKnob(FAUSTFLOAT* zone) {return fKnobSet.count(zone) > 0;}
     
  protected :
@@ -56,6 +57,7 @@ class GTKUI : public GUI
     static const gboolean expand = TRUE;
     static const gboolean fill = TRUE;
          
+    GTKUI(const char * name);
     GTKUI(const char * name, int* pargc, char*** pargv);
 
     // -- Labels and metadata
