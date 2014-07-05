@@ -18,3 +18,10 @@ volumegui = hslider("[8] Volume [style: knob]", 5, 0, 10, 0.1) : smoothctl;
 mastergui = hslider("[9] Master [style: knob]", 5, 0, 10, 0.1) : smoothctl;
 
 
+//
+// Building blocks based on the basic controls above
+//
+
+bypassapp(dsp) = ((dsp : *(1-bypass)), *(bypass)) :> _ with {
+	bypass = bypassgui;
+};

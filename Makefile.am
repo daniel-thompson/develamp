@@ -31,13 +31,16 @@ TESTS_ENVIRONMENT=$(VALGRIND)
 
 src_develamp_DSP = \
 	src/bitshrieker.dsp \
-	src/reverb.dsp \
 	src/cleanamp.dsp \
+	src/spksim.dsp \
+	src/reverb.dsp \
 	src/vumeter.dsp
+
 src_develamp_CLEAN = \
 	src/bitshrieker.cpp \
-	src/reverb.cpp \
 	src/cleanamp.cpp \
+	src/spksim.cpp \
+	src/reverb.cpp \
 	src/vumeter.cpp
 
 src_develamp_SOURCES = \
@@ -62,4 +65,8 @@ CLEANFILES += $(src_develamp_CLEAN)
 # Manual dependancies
 #
 
-$(src_develamp_CLEAN) : $(top_srcdir)/src/faustglue.cpp
+FAUST_LIBFILES = \
+	$(top_srcdir)/src/gui.lib \
+	$(top_srcdir)/src/util.lib
+
+$(src_develamp_DSP) : $(FAUST_LIBFILES) $(top_srcdir)/src/faustglue.cpp
