@@ -32,3 +32,14 @@ rfline(x1, y1, x2, y2) =
 
 rerange(min_in, max_in, min_out, max_out) =
         rfline(min_in, min_out, max_in, max_out);
+
+//
+// Bypassing utilities
+//
+
+bypassmono(bypass, dsp) = _ <: ((dsp : *(1-bypass)), *(bypass)) :> _;
+
+// cutoffmono is a bypassmono workalike but because it uses select2 rather
+// than a smooth cross-over (i.e. there is no de-pops) it prevents the
+// propagation of -nan. Use this mostly for debugging.
+cutoutmono(bypass, dsp) = _ <: dsp, _ : select2(bypass<0.5);
