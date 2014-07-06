@@ -34,10 +34,29 @@ rerange(min_in, max_in, min_out, max_out) =
         rfline(min_in, min_out, max_in, max_out);
 
 //
+// Control smoothed panner maintaining sound intensity
+//
+
+panner2(position) = _ <: left, right with {
+      leftness = position : rerange(-1, 1, 1, 0);
+      left = *(leftness : sqrt : smoothctl);
+      right = *(1-leftness : sqrt : smoothctl);
+};
+
+//
+// Control smoothed wet/dry maintaining sound intensity
+//
+
+wetdry(wetness) = _,_ : wet, dry :> _ with {
+        wet = *(wetness : sqrt : smoothctl);
+        dry = *(1-wetness : sqrt : smoothctl);
+};
+
+//
 // Bypassing utilities
 //
 
-bypassmono(bypass, dsp) = _ <: ((dsp : *(1-bypass)), *(bypass)) :> _;
+bypassmono(bypass, dsp) = _ <: ((dsp : *(bypass)), *(1-bypass)) :> _;
 
 // cutoffmono is a bypassmono workalike but because it uses select2 rather
 // than a smooth cross-over (i.e. there is no de-pops) it prevents the

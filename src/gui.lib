@@ -13,10 +13,10 @@ import("util.lib");
 bypassgui = (1 - checkbox("[1] Bypass")) : smoothctl;
 drivegui = hslider("[2] Drive [style: knob]", 5, 0, 10, 0.1) : smoothctl;
 gaingui = hslider("[3] Gain [style: knob]", 5, 0, 10, 0.1) : smoothctl;
-wetdrygui = hslider("[7] Wet dry [style: knob]", 5, 0, 10, 0.1) : smoothctl;
+wetdrygui = hslider("[7] Wet/dry [style: knob]", 5, 0, 10, 0.1);
+pangui = hslider("[7] Pan [style: knob]", 0, -5, 5, 0.1);
 volumegui = hslider("[8] Volume [style: knob]", 5, 0, 10, 0.1) : smoothctl;
 mastergui = hslider("[9] Master [style: knob]", 5, 0, 10, 0.1) : smoothctl;
-
 
 //
 // Building blocks based on the basic controls above
@@ -25,3 +25,8 @@ mastergui = hslider("[9] Master [style: knob]", 5, 0, 10, 0.1) : smoothctl;
 bypassapp(dsp) = ((dsp : *(1-bypass)), *(bypass)) :> _ with {
 	bypass = bypassgui;
 };
+
+panapp = panner2(pan) with {
+        pan = pangui : rerange(-5, 5, -1, 1);
+};
+

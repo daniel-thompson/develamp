@@ -1,20 +1,19 @@
 /*
- *
  * This is very small Schroeder reverb based on jcrev by John Chowning.
  *
  * Usage:
  *   _ : reverb : _,_
  *   _ : reverb : _,!
  */
- 
+
 declare name      "JCRev Reverb";
 declare license   "GPLv3+";
 declare priority  "90";
 
 import("gui.lib");
 import("util.lib");
- 
-reverb(bypass) = cutoutmono(bypass, *(0.06) : allpass_chain <: comb_bank :> _) <: (_, *(-1)) with {
+
+dryreverb(bypass) = bypassmono(bypass, *(0.06) : allpass_chain <: comb_bank :> _) <: (_, bypassmono(bypass, *(-1))) with {
 	allpass_chain = allpass(347,0.7) :
 			allpass(113,0.7) :
 			allpass( 37,0.7) with {
@@ -37,7 +36,7 @@ reverb(bypass) = cutoutmono(bypass, *(0.06) : allpass_chain <: comb_bank :> _) <
 	};
 
 	/* This is an experiment to produce a stereo reverberation that can be
-	 * mixed back to mono without cancelling out. However at low 
+	 * mixed back to mono without cancelling out. However at low
 	 * levels its too subtle to worry about and at high levels it
 	 * influences the frequency response too much.
 	 */
@@ -48,10 +47,18 @@ reverb(bypass) = cutoutmono(bypass, *(0.06) : allpass_chain <: comb_bank :> _) <
 	};
 };
 
+
+
+reverb(bypass, wetness) = _ <: _,_,dryreverb(bypass) : swap :
+		wetdry(wetness),wetdry(wetness) with {
+	swap(a, b, c, d) = a, c, b, d;
+};
+
 reverbapp = (gui, _) : reverb with {
 	bypass = bypassgui;
+	wetness = wetdrygui : rerange(0, 10, 1, 0);
 
-	gui = hgroup("[0] Reverb", bypass);
+	gui = hgroup("[0] Reverb", bypass, wetness);
 };
 
 process = reverbapp;
