@@ -11,9 +11,12 @@ src/*-svg/*
 
 attic/
 
-develamp
-bitshrieker.cpp
-reverb.cpp
+src/develamp
+src/bitshrieker.cpp
+src/cleanamp.cpp
+src/reverb.cpp
+src/spksim.cpp
+src/vumeter.cpp
 
 # .deps is a directory that is used by automake (and can spring
 # up in multiple places). .dirstamp is similar but is a file.
