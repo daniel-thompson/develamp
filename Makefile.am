@@ -43,6 +43,15 @@ src_develamp_CLEAN = \
 	src/reverb.cpp \
 	src/vumeter.cpp
 
+src_develamp_clean-local :
+	$(RM) -r \
+		src/bitshrieker-svg/ \
+		src/cleanamp-svg/ \
+		src/spksim-svg/ \
+		src/reverb-svg/ \
+		src/vumeter-svg/
+.PHONY : src_develamp_clean-local
+
 src_develamp_SOURCES = \
 	src/main.cpp \
 	src/gtk_knob.cpp \
@@ -56,6 +65,7 @@ src_develamp_CPPFLAGS = $(GTK_CFLAGS) $(JACK_CFLAGS) $(DEVELAMP_CPPFLAGS)
 src_develamp_LDADD = $(GTK_LIBS) $(JACK_LIBS)
 
 CLEANFILES += $(src_develamp_CLEAN)
+clean-local : src_develamp_clean-local
 
 .dsp.cpp:
 	@echo "  FAUST    $@"
