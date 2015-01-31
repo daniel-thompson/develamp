@@ -356,8 +356,13 @@ static gboolean gtk_knob_pointer_motion (GtkWidget *widget, GdkEventMotion *even
 
 static gboolean gtk_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 {
-	usleep(5000);
-	gtk_knob_set_value(widget, event->direction);
+	usleep(1000);
+
+	if (event->direction == GDK_SCROLL_SMOOTH)
+		gtk_knob_set_value(widget, event->delta_y > 0);
+	else
+		gtk_knob_set_value(widget, event->direction);
+
 	return FALSE;
 }
 
